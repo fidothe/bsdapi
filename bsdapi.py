@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
     host = options.host
     if options.port != 80:
-        host = host + options.port
+        host = host + ":" + options.port
 
     request = RequestGenerator(options.api_id, options.secret, host)
 
