@@ -103,8 +103,6 @@ url_secure = request.full_url(url)
 
 if options.verbose:
     print(url_secure)
-    print('-------------')
-    sys.exit(0)
 
 connection.request('GET', url_secure)
 response = connection.getresponse()
