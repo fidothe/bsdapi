@@ -11,39 +11,6 @@ import http.client
 import sys
 from xml.dom import minidom
 
-usage = "Usage: %prog [options]"
-version = "BSD PyAPI 1.0"
-
-parser = OptionParser(usage=usage, version=version)
-
-parser.add_option("-v", "--verbose", 
-                  dest="verbose",
-                  help="Makes this tool loud and obnoxious.", 
-                  action="store_true",
-                  default=False)
-
-parser.add_option("-i", "--api_id",
-                  dest="api_id",
-                  help="The api_id", 
-                  default='sfrazer')
-
-parser.add_option("-o", "--host",
-                  dest="host",
-                  help="The host", 
-                  default='enoch.bluestatedigital.com')
-
-parser.add_option("-p", "--port",
-                  dest="port",
-                  help="The port", 
-                  default='17260')
-
-parser.add_option("-s", "--secret",
-                  dest="secret",
-                  help="The secret",
-                  default='7405d35963605dc36702c06314df85db7349613f')
-
-(options, args) = parser.parse_args()
-
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -77,7 +44,7 @@ class RequestGenerator:
         self.url = {'scheme': url.scheme, 'netloc': url.netloc, 'path': url.path, 'query_raw': url.query, 'query': query, 'fragment': url.fragment}
 
     def gen_query_str(self, api_ts, urlencode=False):
-        query = 'api_id=' + self.api_id + '&api_ts=' + str(api_ts) + '&api_ver=1'
+        query = 'api_ver=1&api_id=' + self.api_id + '&api_ts=' + str(api_ts)
         if self.url['query_raw']:
             query = self.url['query_raw'] + '&' + query
         return query
@@ -93,42 +60,75 @@ class RequestGenerator:
         url = self.url['scheme'] + "://" + self.url['netloc'] + self.url['path'] + "?" + self.gen_query_str(unix_ts) + '&api_mac=' + signing_string
         return url
 
-    
-url = args[0]
+if __name__ == '__main__':
+    usage = "Usage: %prog [options]"
+    version = "BSD PyAPI 1.0"
 
-request = RequestGenerator(options.api_id, options.secret)
+    parser = OptionParser(usage=usage, version=version)
 
-connection = http.client.HTTPConnection(options.host, options.port)
-url_secure = request.full_url(url)
+    parser.add_option("-v", "--verbose", 
+                      dest="verbose",
+                      help="Makes this tool loud and obnoxious.", 
+                      action="store_true",
+                      default=False)
 
-if options.verbose:
-    print(url_secure)
+    parser.add_option("-i", "--api_id",
+                      dest="api_id",
+                      help="The api_id", 
+                      default='sfrazer')
 
-connection.request('GET', url_secure)
-response = connection.getresponse()
+    parser.add_option("-o", "--host",
+                      dest="host",
+                      help="The host", 
+                      default='enoch.bluestatedigital.com')
 
-headers = response.getheaders()
-data = response.read().decode()
-try:
-    data_xml = minidom.parseString(data)
-    data_xml_formatted = data_xml.toxml()
-    data_status = "%sXML Okay%s\n" % (bcolors.OKGREEN, bcolors.ENDC)
-except:
-    data_xml_formatted = ''
-    data_status = "%sXML Malformed%s\n" % (bcolors.FAIL, bcolors.ENDC)
+    parser.add_option("-p", "--port",
+                      dest="port",
+                      help="The port", 
+                      default='17260')
 
-http_version = ('HTTP/1.0' if response.version == 10 else 'HTTP/1.1')
-if response.status == 200:
-    color = bcolors.OKGREEN
-elif response.status == 202:
-    color = bcolors.WARNING
-else:
-    color = bcolors.FAIL
+    parser.add_option("-s", "--secret",
+                      dest="secret",
+                      help="The secret",
+                      default='7405d35963605dc36702c06314df85db7349613f')
 
-sys.stdout.write("%s%s %s %s%s\n" % (color, http_version, response.status, response.reason, bcolors.ENDC))
+    (options, args) = parser.parse_args()
+ 
+    url = args[0]
 
-for (key, value) in headers:
-    sys.stdout.write( "%s%s: %s%s\n" % (bcolors.HEADER, key, value, bcolors.ENDC))
+    request = RequestGenerator(options.api_id, options.secret)
 
-sys.stdout.write("\n%s\n\n%s\n" % (data_xml_formatted, data_status))
-connection.close()
+    connection = http.client.HTTPConnection(options.host, options.port)
+    url_secure = request.full_url(url)
+
+    if options.verbose:
+        print(url_secure)
+
+    connection.request('GET', url_secure)
+    response = connection.getresponse()
+
+    headers = response.getheaders()
+    data = response.read().decode()
+    try:
+        data_xml = minidom.parseString(data)
+        data_xml_formatted = data_xml.toxml()
+        data_status = "%sXML Okay%s\n" % (bcolors.OKGREEN, bcolors.ENDC)
+    except:
+        data_xml_formatted = ''
+        data_status = "%sXML Malformed%s\n" % (bcolors.FAIL, bcolors.ENDC)
+
+    http_version = ('HTTP/1.0' if response.version == 10 else 'HTTP/1.1')
+    if response.status == 200:
+        color = bcolors.OKGREEN
+    elif response.status == 202:
+        color = bcolors.WARNING
+    else:
+        color = bcolors.FAIL
+
+    sys.stdout.write("%s%s %s %s%s\n" % (color, http_version, response.status, response.reason, bcolors.ENDC))
+
+    for (key, value) in headers:
+        sys.stdout.write( "%s%s: %s%s\n" % (bcolors.HEADER, key, value, bcolors.ENDC))
+
+    sys.stdout.write("\n%s\n\n%s\n" % (data_xml_formatted, data_status))
+    connection.close()
