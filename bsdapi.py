@@ -28,36 +28,27 @@ class bcolors:
         self.ENDC = ''
 
 class RequestGenerator:
-    
-    def __init__(self, api_id, secret):
-        self.secret = secret
-        self.api_id = api_id
 
-    def set_url(self, url):
-        url = urllib.parse.urlsplit(url)
-        query = {}
-        if url.query:
-            for param in url.query.split('&'):
-                (var, val) = param.split('=')
-                query[var] = val
-        
-        self.url = {'scheme': url.scheme, 'netloc': url.netloc, 'path': url.path, 'query_raw': url.query, 'query': query, 'fragment': url.fragment}
+    def __init__(self, api_id, api_secret, api_host):
+        self.api_secret = api_secret
+        self.api_id     = api_id
+        self.api_host   = api_host
+        self.api_base   = '/page/api'
 
-    def gen_query_str(self, api_ts, urlencode=False):
+    def gen_query_str(self, api_ts, api_params):
         query = 'api_ver=1&api_id=' + self.api_id + '&api_ts=' + str(api_ts)
-        if self.url['query_raw']:
-            query = self.url['query_raw'] + '&' + query
+        if api_params:
+            query = api_params + '&' + query
         return query
 
-    def gen_signing_string(self, api_ts):
-        string = "\n".join([self.api_id, str(api_ts), self.url['path'], self.gen_query_str(api_ts)])
-        return hmac.new(self.secret.encode(), string.encode(), hashlib.sha1).hexdigest()
+    def gen_signing_string(self, api_ts, api_call, api_params):
+        string = "\n".join([self.api_id, str(api_ts), self.api_base + api_call, self.gen_query_str(api_ts, api_params)])
+        return hmac.new(self.api_secret.encode(), string.encode(), hashlib.sha1).hexdigest()
 
-    def full_url(self, url):
+    def full_url(self, api_call, api_params):
         unix_ts = int(time())
-        self.set_url(url)
-        signing_string = self.gen_signing_string(unix_ts)
-        url = self.url['scheme'] + "://" + self.url['netloc'] + self.url['path'] + "?" + self.gen_query_str(unix_ts) + '&api_mac=' + signing_string
+        signing_string = self.gen_signing_string(unix_ts, api_call, api_params)
+        url = "http://" + self.api_host + self.api_base + api_call + "?" + self.gen_query_str(unix_ts, api_params) + '&api_mac=' + signing_string
         return url
 
 if __name__ == '__main__':
@@ -93,13 +84,18 @@ if __name__ == '__main__':
                       default='7405d35963605dc36702c06314df85db7349613f')
 
     (options, args) = parser.parse_args()
- 
-    url = args[0]
 
-    request = RequestGenerator(options.api_id, options.secret)
+    api_call = args[0]
+    api_params = args[1]
+
+    host = options.host
+    if options.port != 80:
+        host = host + options.port
+
+    request = RequestGenerator(options.api_id, options.secret, host)
 
     connection = http.client.HTTPConnection(options.host, options.port)
-    url_secure = request.full_url(url)
+    url_secure = request.full_url(api_call, api_params)
 
     if options.verbose:
         print(url_secure)
