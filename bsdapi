@@ -12,7 +12,7 @@ import sys
 from xml.dom import minidom
 
 usage = "Usage: %prog [options]"
-version = "API 1.0"
+version = "BSD PyAPI 1.0"
 
 parser = OptionParser(usage=usage, version=version)
 
@@ -36,6 +36,11 @@ parser.add_option("-p", "--port",
                   dest="port",
                   help="The port", 
                   default='17260')
+
+parser.add_option("-s", "--secret",
+                  dest="secret",
+                  help="The secret",
+                  default='7405d35963605dc36702c06314df85db7349613f')
 
 (options, args) = parser.parse_args()
 
@@ -90,9 +95,8 @@ class RequestGenerator:
 
     
 url = args[0]
-secret = "7405d35963605dc36702c06314df85db7349613f"
 
-request = RequestGenerator(options.api_id, secret)
+request = RequestGenerator(options.api_id, options.secret)
 
 connection = http.client.HTTPConnection(options.host, options.port)
 url_secure = request.full_url(url)
