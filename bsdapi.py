@@ -27,6 +27,39 @@ class bcolors:
         self.FAIL = ''
         self.ENDC = ''
 
+class URL:
+
+    def __init__(self):
+        self.protocol = 'http'
+        self.host = 'localhost'
+        self.path = '/'
+        self.query = ''
+
+    def __setattr__(self, name, val):
+        if name not in ['protocol', 'host', 'path', 'query']:
+            raise URLError('Cannot set that value')
+
+        if name == 'query' and type(val).__name__ == 'dict':
+            self.__dict__[name] = urllib.parse.urlencode(val)
+        elif name == 'query' and type(val).__name__ == 'str':
+            self.__dict__[name] = val
+        elif name == 'path' and val[0] != '/':
+            self.__dict__[name] = '/' + val
+        else:
+            self.__dict__[name] = val
+
+    def __str__(self):
+        url = self.protocol + '://' + self.host + self.path
+        if len(self.query):
+            url = url + '?' + self.query
+        return url
+
+    def getPathAndQuery(self):
+        url = self.path
+        if len(self.query):
+            url = url + '?' + self.query
+        return url
+
 class RequestGenerator:
 
     def __init__(self, api_id, api_secret, api_host):
@@ -45,10 +78,15 @@ class RequestGenerator:
         string = "\n".join([self.api_id, str(api_ts), self.api_base + api_call, self.gen_query_str(api_ts, api_params)])
         return hmac.new(self.api_secret.encode(), string.encode(), hashlib.sha1).hexdigest()
 
-    def full_url(self, api_call, api_params):
+    def getUrl(self, api_call, api_params):
         unix_ts = int(time())
         signing_string = self.gen_signing_string(unix_ts, api_call, api_params)
-        url = "http://" + self.api_host + self.api_base + api_call + "?" + self.gen_query_str(unix_ts, api_params) + '&api_mac=' + signing_string
+
+        url = URL()
+        url.host = self.api_host
+        url.path = self.api_base + api_call
+        url.query = self.gen_query_str(unix_ts, api_params) + '&api_mac=' + signing_string
+        #url = "http://" + self.api_host + self.api_base + api_call + "?" + self.gen_query_str(unix_ts, api_params) + '&api_mac=' + signing_string
         return url
 
 if __name__ == '__main__':
@@ -57,25 +95,25 @@ if __name__ == '__main__':
 
     parser = OptionParser(usage=usage, version=version)
 
-    parser.add_option("-v", "--verbose", 
+    parser.add_option("-v", "--verbose",
                       dest="verbose",
-                      help="Makes this tool loud and obnoxious.", 
+                      help="Makes this tool loud and obnoxious.",
                       action="store_true",
                       default=False)
 
     parser.add_option("-i", "--api_id",
                       dest="api_id",
-                      help="The api_id", 
+                      help="The api_id",
                       default='sfrazer')
 
     parser.add_option("-o", "--host",
                       dest="host",
-                      help="The host", 
+                      help="The host",
                       default='enoch.bluestatedigital.com')
 
     parser.add_option("-p", "--port",
                       dest="port",
-                      help="The port", 
+                      help="The port",
                       default='17260')
 
     parser.add_option("-s", "--secret",
@@ -95,12 +133,12 @@ if __name__ == '__main__':
     request = RequestGenerator(options.api_id, options.secret, host)
 
     connection = http.client.HTTPConnection(options.host, options.port)
-    url_secure = request.full_url(api_call, api_params)
+    url_secure = request.getUrl(api_call, api_params)
 
     if options.verbose:
         print(url_secure)
 
-    connection.request('GET', url_secure)
+    connection.request('GET', url_secure.getPathAndQuery())
     response = connection.getresponse()
 
     headers = response.getheaders()
