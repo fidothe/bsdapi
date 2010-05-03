@@ -3,14 +3,13 @@
 from os.path import join, getsize, exists
 from optparse import OptionParser
 from time import time
-import hashlib
 import binascii
-import hmac
-import urllib.parse
 import http.client
 import sys
 from xml.dom import minidom
 import configparser
+from URL import URL
+from RequestGenerator import RequestGenerator
 
 class bcolors:
     HEADER = '\033[95m'
@@ -27,68 +26,6 @@ class bcolors:
         self.WARNING = ''
         self.FAIL = ''
         self.ENDC = ''
-
-class URL:
-
-    def __init__(self):
-        self.protocol = 'http'
-        self.host = 'localhost'
-        self.path = '/'
-        self.query = ''
-
-    def __setattr__(self, name, val):
-        if name not in ['protocol', 'host', 'path', 'query']:
-            raise URLError('Cannot set that value')
-
-        if name == 'query' and type(val).__name__ == 'dict':
-            self.__dict__[name] = urllib.parse.urlencode(val)
-        elif name == 'query' and type(val).__name__ == 'str':
-            self.__dict__[name] = val
-        elif name == 'path' and val[0] != '/':
-            self.__dict__[name] = '/' + val
-        else:
-            self.__dict__[name] = val
-
-    def __str__(self):
-        url = self.protocol + '://' + self.host + self.path
-        if len(self.query):
-            url = url + '?' + self.query
-        return url
-
-    def getPathAndQuery(self):
-        url = self.path
-        if len(self.query):
-            url = url + '?' + self.query
-        return url
-
-class RequestGenerator:
-
-    def __init__(self, api_id, api_secret, api_host):
-        self.api_secret = api_secret
-        self.api_id     = api_id
-        self.api_host   = api_host
-        self.api_base   = '/page/api'
-
-    def gen_query_str(self, api_ts, api_params):
-        query = 'api_ver=1&api_id=' + self.api_id + '&api_ts=' + str(api_ts)
-        if api_params:
-            query = api_params + '&' + query
-        return query
-
-    def gen_signing_string(self, api_ts, api_call, api_params):
-        string = "\n".join([self.api_id, str(api_ts), self.api_base + api_call, self.gen_query_str(api_ts, api_params)])
-        return hmac.new(self.api_secret.encode(), string.encode(), hashlib.sha1).hexdigest()
-
-    def getUrl(self, api_call, api_params):
-        unix_ts = int(time())
-        signing_string = self.gen_signing_string(unix_ts, api_call, api_params)
-
-        url = URL()
-        url.host = self.api_host
-        url.path = self.api_base + api_call
-        url.query = self.gen_query_str(unix_ts, api_params) + '&api_mac=' + signing_string
-        #url = "http://" + self.api_host + self.api_base + api_call + "?" + self.gen_query_str(unix_ts, api_params) + '&api_mac=' + signing_string
-        return url
 
 if __name__ == '__main__':
     usage = "Usage: %prog [options]"
