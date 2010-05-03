@@ -1,9 +1,6 @@
 #!/home/sfrazer/bin/python
 
-from os.path import join, getsize, exists
 from optparse import OptionParser
-from time import time
-import binascii
 import http.client
 import sys
 from xml.dom import minidom
