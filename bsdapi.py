@@ -10,6 +10,7 @@ import urllib.parse
 import http.client
 import sys
 from xml.dom import minidom
+import configparser
 
 class bcolors:
     HEADER = '\033[95m'
@@ -101,38 +102,31 @@ if __name__ == '__main__':
                       action="store_true",
                       default=False)
 
-    parser.add_option("-i", "--api_id",
-                      dest="api_id",
-                      help="The api_id",
-                      default='sfrazer')
-
-    parser.add_option("-o", "--host",
-                      dest="host",
-                      help="The host",
-                      default='enoch.bluestatedigital.com')
-
-    parser.add_option("-p", "--port",
-                      dest="port",
-                      help="The port",
-                      default='17260')
-
-    parser.add_option("-s", "--secret",
-                      dest="secret",
-                      help="The secret",
-                      default='7405d35963605dc36702c06314df85db7349613f')
+    parser.add_option("-f", "--file",
+                      dest="config_file",
+                      help="The Configuration File",
+                      default='/etc/bsdapi')
 
     (options, args) = parser.parse_args()
 
     api_call = args[0]
     api_params = args[1]
 
-    host = options.host
-    if options.port != 80:
-        host = host + ":" + options.port
+    config = configparser.RawConfigParser()
+    config.read(options.config_file)
 
-    request = RequestGenerator(options.api_id, options.secret, host)
+    settings = {'basic' : {'host': 'localhost', 'port': '80'}}
 
-    connection = http.client.HTTPConnection(options.host, options.port)
+    for key, value in config.items('basic'):
+        settings['basic'][key] = value
+
+    host = settings['basic']['host']
+    if settings['basic']['port'] != 80:
+        host = host + ":" + settings['basic']['port']
+
+    request = RequestGenerator(settings['basic']['api_id'], settings['basic']['secret'], host)
+
+    connection = http.client.HTTPConnection(settings['basic']['host'], settings['basic']['port'])
     url_secure = request.getUrl(api_call, api_params)
 
     if options.verbose:
