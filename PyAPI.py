@@ -3,6 +3,7 @@ from PyAPIFilters import PyAPIFilters
 from RequestGenerator import RequestGenerator
 from PyAPIResults import PyAPIResults
 import http.client
+import urllib.parse
 from collections import OrderedDict
 
 class PyAPI:
@@ -26,7 +27,7 @@ class PyAPI:
         return self._makeGETRequest(url_secure)
 
     def cons_getConstituentsByExtId(self, ext_type, ext_ids, filters=None, bundles=None):
-        query = {'ext_type': ext_type, 'ext_ids': ','.join([str(elem) for elem in cons_ids])}
+        query = {'ext_type': ext_type, 'ext_ids': ','.join([str(elem) for elem in ext_ids])}
 
         if filters:
             f = PyAPIFilters(filters)
@@ -51,6 +52,12 @@ class PyAPI:
         url_secure = self._generateRequest('/cons/get_updated_constituents', query)
         return self._makeGETRequest(url_secure)
 
+    def cons_setExtIds(self, ext_type, cons_id__ext_id):
+        query = OrderedDict([('ext_type', str(ext_type))])
+        query.update(cons_id__ext_id);
+        url_secure = self._generateRequest('/cons/set_ext_ids')
+        return self._makePOSTRequest(url_secure, urllib.parse.urlencode(query))
+
     def circle_listCircles(self, circle_type=None, state_cd=None):
         query = {}
 
@@ -63,7 +70,7 @@ class PyAPI:
         url_secure = self._generateRequest('/circle/list_circles', query)
         return self._makeGETRequest(url_secure)
 
-    def _generateRequest(self, api_call, api_params):
+    def _generateRequest(self, api_call, api_params = {}):
         host = self.host
         if self.port != 80:
             host = host + ":" + self.port
@@ -85,5 +92,18 @@ class PyAPI:
         results = PyAPIResults(response, headers, body)
         return results
 
-    def _makePOSTRequest(self, url_secure):
-        pass
+    def _makePOSTRequest(self, url_secure, body):
+        connection = http.client.HTTPConnection(self.host, self.port)
+        headers = {"Content-type": "application/x-www-form-urlencoded",
+                   "Accept": "text/xml"}
+        connection.request('POST', url_secure.getPathAndQuery(), body, headers)
+        print(url_secure)
+        print(body)
+        response = connection.getresponse()
+        headers = response.getheaders()
+        body = response.read().decode()
+
+        connection.close()
+
+        results = PyAPIResults(response, headers, body)
+        return results

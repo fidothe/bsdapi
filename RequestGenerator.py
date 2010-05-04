@@ -35,7 +35,7 @@ class RequestGenerator:
         string = "\n".join([self.api_id, str(api_ts), self.api_base + api_call, self._query_str(api_ts, api_params, quote=False)])
         return hmac.new(self.api_secret.encode(), string.encode(), hashlib.sha1).hexdigest()
 
-    def getUrl(self, api_call, api_params):
+    def getUrl(self, api_call, api_params = OrderedDict()):
         if type(api_params).__name__ == 'dict':
             params = OrderedDict(sorted(api_params.items(), key=lambda t: t[0]))
         else:
