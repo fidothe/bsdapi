@@ -56,6 +56,23 @@ class PyAPI:
         url_secure = self._generateRequest('/cons/set_ext_ids')
         return self._makePOSTRequest(url_secure, urllib.parse.urlencode(query))
 
+    def cons_deleteConstituentsById(self, cons_ids):
+        query = {'cons_ids': ','.join([str(cons) for cons in cons_ids])}
+        url_secure = self._generateRequest('/cons/delete_constituents_by_id', query)
+        return self._makeGETRequest(url_secure)
+
+    def cons_getBulkConstituentData(self, format, fields, cons_ids=None, filters=None):
+        query = {'format': str(format), 'fields': ','.join([str(field) for field in fields])}
+
+        if cons_ids:
+            query['cons_ids'] = ','.join([str(cons) for cons in cons_ids])
+
+        if filters:
+            query['filter'] =  str(PyAPIFilters(filters))
+
+        url_secure = self._generateRequest('/cons/get_bulk_constituent_data')
+        return self._makePOSTRequest(url_secure, urllib.parse.urlencode(query))
+
     def circle_listCircles(self, circle_type=None, state_cd=None):
         query = {}
 
@@ -66,6 +83,11 @@ class PyAPI:
             query['state_cd'] = str(state_cd)
 
         url_secure = self._generateRequest('/circle/list_circles', query)
+        return self._makeGETRequest(url_secure)
+
+    def getDeferredResults(self, deferred_id):
+        query = {'deferred_id': deferred_id}
+        url_secure = self._generateRequest('/get_deferred_results', query)
         return self._makeGETRequest(url_secure)
 
     def _generateRequest(self, api_call, api_params = {}):
@@ -95,8 +117,7 @@ class PyAPI:
         headers = {"Content-type": "application/x-www-form-urlencoded",
                    "Accept": "text/xml"}
         connection.request('POST', url_secure.getPathAndQuery(), body, headers)
-        print(url_secure)
-        print(body)
+
         response = connection.getresponse()
         headers = response.getheaders()
         body = response.read().decode()
