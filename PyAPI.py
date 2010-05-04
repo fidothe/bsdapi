@@ -73,7 +73,7 @@ class PyAPI:
         if self.port != 80:
             host = host + ":" + self.port
 
-        request = RequestGenerator(self.api_id, self.secret, self.host)
+        request = RequestGenerator(self.api_id, self.secret, host)
         url_secure = request.getUrl(api_call, api_params)
         return url_secure
 
@@ -87,7 +87,7 @@ class PyAPI:
 
         connection.close()
 
-        results = PyAPIResults(response, headers, body)
+        results = PyAPIResults(url_secure, response, headers, body)
         return results
 
     def _makePOSTRequest(self, url_secure, body):
@@ -103,5 +103,5 @@ class PyAPI:
 
         connection.close()
 
-        results = PyAPIResults(response, headers, body)
+        results = PyAPIResults(url_secure, response, headers, body)
         return results
