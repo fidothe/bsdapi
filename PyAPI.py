@@ -30,12 +30,10 @@ class PyAPI:
         query = {'ext_type': ext_type, 'ext_ids': ','.join([str(elem) for elem in ext_ids])}
 
         if filters:
-            f = PyAPIFilters(filters)
-            query['filter'] =  str(f)
+            query['filter'] =  str(PyAPIFilters(filters))
 
         if bundles:
-            b = PyAPIBundles(bundles)
-            query['bundles'] = str(b)
+            query['bundles'] = str(PyAPIBundles(bundles))
 
         url_secure = self._generateRequest('/cons/get_constituents_by_ext_id', query)
         return self._makeGETRequest(url_secure)
