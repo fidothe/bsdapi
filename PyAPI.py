@@ -3,6 +3,7 @@ from PyAPIFilters import PyAPIFilters
 from RequestGenerator import RequestGenerator
 from PyAPIResults import PyAPIResults
 import http.client
+from collections import OrderedDict
 
 class PyAPI:
 
@@ -13,29 +14,53 @@ class PyAPI:
         self.port   = port
 
     def cons_getConstituentsById(self, cons_ids, filters=None, bundles=None):
-        query_str = 'cons_ids=' + ','.join([str(elem) for elem in cons_ids])
+        query = {'cons_ids': ','.join([str(elem) for elem in cons_ids])}
+
+        if filters:
+            query['filter'] =  str(PyAPIFilters(filters))
+
+        if bundles:
+            query['bundles'] = str(PyAPIBundles(bundles))
+
+        url_secure = self._generateRequest('/cons/get_constituents_by_id', query)
+        return self._makeGETRequest(url_secure)
+
+    def cons_getConstituentsByExtId(self, ext_type, ext_ids, filters=None, bundles=None):
+        query = {'ext_type': ext_type, 'ext_ids': ','.join([str(elem) for elem in cons_ids])}
 
         if filters:
             f = PyAPIFilters(filters)
-            query_str += '&filter=' + str(f)
+            query['filter'] =  str(f)
 
         if bundles:
             b = PyAPIBundles(bundles)
-            query_str += '&bundles=' + str(b)
+            query['bundles'] = str(b)
 
-        url_secure = self._generateRequest('/cons/get_constituents_by_id', query_str)
+        url_secure = self._generateRequest('/cons/get_constituents_by_ext_id', query)
+        return self._makeGETRequest(url_secure)
+
+    def cons_getUpdatedConstituents(self, changed_since, filters=None, bundles=None):
+        query = {'changed_since': str(changed_since)}
+
+        if filters:
+            query['filter'] =  str(PyAPIFilters(filters))
+
+        if bundles:
+            query['bundles'] = str(PyAPIBundles(bundles))
+
+        url_secure = self._generateRequest('/cons/get_updated_constituents', query)
         return self._makeGETRequest(url_secure)
 
     def circle_listCircles(self, circle_type=None, state_cd=None):
-        query_str = ''
+        query = {}
 
         if circle_type:
-            query_str += 'circle_type=' + str(circle_type)
+            query['circle_type'] = str(circle_type)
 
         if state_cd:
-            query_str += '&state_cd=' + str(state_cd)
+            query['state_cd'] = str(state_cd)
 
-        url_secure = self._generateRequest('/circle/list_circles', query_str)
+        url_secure = self._generateRequest('/circle/list_circles', query)
         return self._makeGETRequest(url_secure)
 
     def _generateRequest(self, api_call, api_params):
