@@ -24,7 +24,7 @@ class PyAPIResults:
             s += "%s%s: %s%s\n" % (bcolors.HEADER, key, value, bcolors.ENDC)
 
         s += "\n%s\n" % (self.body)
-        return s
+        return s.strip()
 
     def __str__(self):
         s = "%s %s %s\n" % (self.http_version, str(self.http_status), self.http_reason)
@@ -34,4 +34,4 @@ class PyAPIResults:
 
         s += "\n"
         s += self.body
-        return s
+        return s.strip()
