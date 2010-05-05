@@ -21,6 +21,12 @@ if __name__ == '__main__':
                       action="store_true",
                       default=False)
 
+    parser.add_option("-c", "--color",
+                      dest="color",
+                      help="Use ANSI colors for display",
+                      action="store_true",
+                      default=False)
+
     parser.add_option("-f", "--file",
                       dest="config_file",
                       help="The Configuration File",
@@ -40,7 +46,7 @@ if __name__ == '__main__':
     for key, value in config.items('basic'):
         settings['basic'][key] = value
 
-    api = PyAPI(settings['basic']['api_id'], settings['basic']['secret'], settings['basic']['host'], settings['basic']['port'])
+    api = PyAPI(settings['basic']['api_id'], settings['basic']['secret'], settings['basic']['host'], settings['basic']['port'], options)
 
     sys.ps1 = 'api> '
     code.interact('BSD Interactive API', local=locals())

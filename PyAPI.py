@@ -8,13 +8,15 @@ from collections import OrderedDict
 
 class PyAPI:
 
-    def __init__(self, api_id, secret, host, port):
+    def __init__(self, api_id, secret, host, port, options=None):
         self.api_id = api_id
         self.secret = secret
         self.host   = host
         self.port   = port
+        self.options = options
 
     def cons_getConstituentsById(self, cons_ids, filters=None, bundles=None):
+        '''Retrieves constituents by ID '''
         query = {'cons_ids': ','.join([str(elem) for elem in cons_ids])}
 
         if filters:
@@ -107,7 +109,7 @@ class PyAPI:
 
     def cons_group_setExtIdsForGroup(self, cons_group_id, ext_type, ext_ids):
         query = {'cons_group_ids': str(cons_group_id),
-                 'ext_type': ext_type),
+                 'ext_type': ext_type,
                  'ext_ids': ','.join([str(ext) for ext in ext_ids])}
 
         url_secure = self._generateRequest('/cons_group/set_ext_ids_for_group')
@@ -122,7 +124,7 @@ class PyAPI:
 
     def cons_group_addExtIdsToGroup(self, cons_group_id, ext_type, ext_ids):
         query = {'cons_group_ids': str(cons_group_id),
-                 'ext_type': ext_type),
+                 'ext_type': ext_type,
                  'ext_ids': ','.join([str(ext) for ext in ext_ids])}
 
         url_secure = self._generateRequest('/cons_group/add_ext_ids_to_group')
@@ -137,7 +139,7 @@ class PyAPI:
 
     def cons_group_removeExtIdsToGroup(self, cons_group_id, ext_type, ext_ids):
         query = {'cons_group_ids': str(cons_group_id),
-                 'ext_type': ext_type),
+                 'ext_type': ext_type,
                  'ext_ids': ','.join([str(ext) for ext in ext_ids])}
 
         url_secure = self._generateRequest('/cons_group/remove_ext_ids_to_group')
@@ -276,7 +278,7 @@ class PyAPI:
 
         connection.close()
 
-        results = PyAPIResults(url_secure, response, headers, body)
+        results = PyAPIResults(url_secure, response, headers, body, self.options)
         return results
 
     def _makePOSTRequest(self, url_secure, body):
@@ -297,5 +299,5 @@ class PyAPI:
 
         connection.close()
 
-        results = PyAPIResults(url_secure, response, headers, body)
+        results = PyAPIResults(url_secure, response, headers, body, self.options)
         return results
