@@ -13,7 +13,7 @@ class PyAPIResults:
 
     def __str__(self):
         color = Colors()
-        print(self.options)
+
         if type(self.options).__name__ == 'NoneType' or not self.options.color:
             color.disable()
 
