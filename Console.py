@@ -3,7 +3,7 @@
 from os.path import exists
 from optparse import OptionParser
 import http.client
-import sys, code, configparser, readline, atexit, os
+import sys, code, configparser, readline, atexit, os, rlcompleter
 from xml.dom import minidom
 from URL import URL
 from RequestGenerator import RequestGenerator
@@ -37,7 +37,7 @@ class Console(code.InteractiveConsole):
         (self.options, self.args) = self.parser.parse_args()
 
         if not exists(self.options.config_file):
-            sys.stderr.write("Error: Config file %s does not exist\n" % (options.config_file) )
+            sys.stderr.write("Error: Config file %s does not exist\n" % (self.options.config_file) )
             sys.exit(1)
 
         config = configparser.RawConfigParser()
