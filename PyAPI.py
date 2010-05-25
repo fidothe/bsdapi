@@ -1,10 +1,9 @@
 from PyAPIBundles import PyAPIBundles
 from PyAPIFilters import PyAPIFilters
-from RequestGenerator import RequestGenerator
 from PyAPIResults import PyAPIResults
-import http.client
-import urllib.parse
 from collections import OrderedDict
+from RequestGenerator import RequestGenerator
+import http.client, urllib.parse
 
 class PyAPI:
 
@@ -15,12 +14,21 @@ class PyAPI:
         self.port   = port
         self.options = options
 
-    def cons_getConstituentsById(self, cons_ids, filters=None, bundles=None):
+    def cons_getConstituents(self, filter, bundles=None):
+        query = {'filter': str(PyAPIFilters(filter))}
+
+        if bundles:
+            query['bundles'] = str(PyAPIBundles(bundles))
+
+        url_secure = self._generateRequest('/cons/get_constituents', query)
+        return self._makeGETRequest(url_secure)
+
+    def cons_getConstituentsById(self, cons_ids, filter=None, bundles=None):
         '''Retrieves constituents by ID '''
         query = {'cons_ids': ','.join([str(elem) for elem in cons_ids])}
 
-        if filters:
-            query['filter'] =  str(PyAPIFilters(filters))
+        if filter:
+            query['filter'] =  str(PyAPIFilters(filter))
 
         if bundles:
             query['bundles'] = str(PyAPIBundles(bundles))
@@ -28,11 +36,11 @@ class PyAPI:
         url_secure = self._generateRequest('/cons/get_constituents_by_id', query)
         return self._makeGETRequest(url_secure)
 
-    def cons_getConstituentsByExtId(self, ext_type, ext_ids, filters=None, bundles=None):
+    def cons_getConstituentsByExtId(self, ext_type, ext_ids, filter=None, bundles=None):
         query = {'ext_type': ext_type, 'ext_ids': ','.join([str(elem) for elem in ext_ids])}
 
-        if filters:
-            query['filter'] =  str(PyAPIFilters(filters))
+        if filter:
+            query['filter'] =  str(PyAPIFilters(filter))
 
         if bundles:
             query['bundles'] = str(PyAPIBundles(bundles))
@@ -40,11 +48,11 @@ class PyAPI:
         url_secure = self._generateRequest('/cons/get_constituents_by_ext_id', query)
         return self._makeGETRequest(url_secure)
 
-    def cons_getUpdatedConstituents(self, changed_since, filters=None, bundles=None):
+    def cons_getUpdatedConstituents(self, changed_since, filter=None, bundles=None):
         query = {'changed_since': str(changed_since)}
 
-        if filters:
-            query['filter'] =  str(PyAPIFilters(filters))
+        if filter:
+            query['filter'] =  str(PyAPIFilters(filter))
 
         if bundles:
             query['bundles'] = str(PyAPIBundles(bundles))
@@ -53,8 +61,9 @@ class PyAPI:
         return self._makeGETRequest(url_secure)
 
     def cons_setExtIds(self, ext_type, cons_id__ext_id):
-        query = OrderedDict([('ext_type', str(ext_type))])
-        query.update(cons_id__ext_id);
+        query = {'ext_type': str(ext_type)}
+        query.update(cons_id__ext_id)
+        print(query)
         url_secure = self._generateRequest('/cons/set_ext_ids')
         return self._makePOSTRequest(url_secure, query)
 
@@ -63,14 +72,14 @@ class PyAPI:
         url_secure = self._generateRequest('/cons/delete_constituents_by_id', query)
         return self._makeGETRequest(url_secure)
 
-    def cons_getBulkConstituentData(self, format, fields, cons_ids=None, filters=None):
+    def cons_getBulkConstituentData(self, format, fields, cons_ids=None, filter=None):
         query = {'format': str(format), 'fields': ','.join([str(field) for field in fields])}
 
         if cons_ids:
             query['cons_ids'] = ','.join([str(cons) for cons in cons_ids])
 
-        if filters:
-            query['filter'] =  str(PyAPIFilters(filters))
+        if filter:
+            query['filter'] =  str(PyAPIFilters(filter))
 
         url_secure = self._generateRequest('/cons/get_bulk_constituent_data')
         return self._makePOSTRequest(url_secure, query)
@@ -180,7 +189,7 @@ class PyAPI:
                  'ext_ids': ','.join([str(ext_id) for ext_id in ext_ids])}
 
         url_secure = self._generateRequest('/circle/set_ext_ids_for_circle')
-        return self._makeGETRequest(url_secure, query)
+        return self._makePOSTRequest(url_secure, query)
 
     def circle_addConsIdsForCircle(self, circle_id, cons_ids):
         query = {'circle_id': str(circle_id),
@@ -249,6 +258,32 @@ class PyAPI:
 
         url_secure = self._generateRequest('/circle/set_circle_owner')
         return self._makePOSTRequest(url_secure, query)
+
+    def signup_listForms(self):
+        query = {}
+        url_secure = self._generateRequest('/signup/list_forms', query)
+        return self._makeGETRequest(url_secure)
+    
+    def signup_listFormFields(self, signup_form_id):
+        query = {'signup_form_id': str(signup_form_id)}
+        url_secure = self._generateRequest('/signup/list_form_fields', query)
+        return self._makeGETRequest(url_secure)
+
+    def signup_signupCount(self, signup_form_id, signup_form_field_ids=None):
+        query = {'signup_form_id': str(signup_form_id)}
+
+        if signup_form_field_ids:
+            query['signup_form_field_ids'] = ','.join([str(elem) for elem in signup_form_field_ids])
+
+        url_secure = self._generateRequest('/signup/signup_count', query)
+        return self._makeGETRequest(url_secure)
+
+    def signup_countByField(self, signup_form_id, signup_form_field_id):
+        query = {'signup_form_id': str(signup_form_id),
+                 'signup_form_field_id': str(signup_form_field_id)}
+
+        url_secure = self._generateRequest('/signup/count_by_field', query)
+        return self._makeGETRequest(url_secure)
 
     def wrappers_listWrappers(self):
         url_secure = self._generateRequest('/wrappers/list_wrappers')
