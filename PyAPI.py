@@ -69,8 +69,8 @@ class PyAPI:
 
     def cons_deleteConstituentsById(self, cons_ids):
         query = {'cons_ids': ','.join([str(cons) for cons in cons_ids])}
-        url_secure = self._generateRequest('/cons/delete_constituents_by_id', query)
-        return self._makeGETRequest(url_secure)
+        url_secure = self._generateRequest('/cons/delete_constituents_by_id')
+        return self._makePOSTRequest(url_secure, query)
 
     def cons_getBulkConstituentData(self, format, fields, cons_ids=None, filter=None):
         query = {'format': str(format), 'fields': ','.join([str(field) for field in fields])}
