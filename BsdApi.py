@@ -1,11 +1,11 @@
-from PyAPIBundles import PyAPIBundles
-from PyAPIFilters import PyAPIFilters
-from PyAPIResults import PyAPIResults
+from BsdApiBundles import BsdApiBundles
+from BsdApiFilters import BsdApiFilters
+from BsdApiResults import BsdApiResults
 from collections import OrderedDict
 from RequestGenerator import RequestGenerator
 import http.client, urllib.parse
 
-class PyAPI:
+class BsdApi:
 
     def __init__(self, api_id, secret, host, port, options=None):
         self.api_id = api_id
@@ -15,10 +15,10 @@ class PyAPI:
         self.options = options
 
     def cons_getConstituents(self, filter, bundles=None):
-        query = {'filter': str(PyAPIFilters(filter))}
+        query = {'filter': str(BsdApiFilters(filter))}
 
         if bundles:
-            query['bundles'] = str(PyAPIBundles(bundles))
+            query['bundles'] = str(BsdApiBundles(bundles))
 
         url_secure = self._generateRequest('/cons/get_constituents', query)
         return self._makeGETRequest(url_secure)
@@ -28,10 +28,10 @@ class PyAPI:
         query = {'cons_ids': ','.join([str(elem) for elem in cons_ids])}
 
         if filter:
-            query['filter'] =  str(PyAPIFilters(filter))
+            query['filter'] =  str(BsdApiFilters(filter))
 
         if bundles:
-            query['bundles'] = str(PyAPIBundles(bundles))
+            query['bundles'] = str(BsdApiBundles(bundles))
 
         url_secure = self._generateRequest('/cons/get_constituents_by_id', query)
         return self._makeGETRequest(url_secure)
@@ -40,10 +40,10 @@ class PyAPI:
         query = {'ext_type': ext_type, 'ext_ids': ','.join([str(elem) for elem in ext_ids])}
 
         if filter:
-            query['filter'] =  str(PyAPIFilters(filter))
+            query['filter'] =  str(BsdApiFilters(filter))
 
         if bundles:
-            query['bundles'] = str(PyAPIBundles(bundles))
+            query['bundles'] = str(BsdApiBundles(bundles))
 
         url_secure = self._generateRequest('/cons/get_constituents_by_ext_id', query)
         return self._makeGETRequest(url_secure)
@@ -52,10 +52,10 @@ class PyAPI:
         query = {'changed_since': str(changed_since)}
 
         if filter:
-            query['filter'] =  str(PyAPIFilters(filter))
+            query['filter'] =  str(BsdApiFilters(filter))
 
         if bundles:
-            query['bundles'] = str(PyAPIBundles(bundles))
+            query['bundles'] = str(BsdApiBundles(bundles))
 
         url_secure = self._generateRequest('/cons/get_updated_constituents', query)
         return self._makeGETRequest(url_secure)
@@ -79,7 +79,7 @@ class PyAPI:
             query['cons_ids'] = ','.join([str(cons) for cons in cons_ids])
 
         if filter:
-            query['filter'] =  str(PyAPIFilters(filter))
+            query['filter'] =  str(BsdApiFilters(filter))
 
         url_secure = self._generateRequest('/cons/get_bulk_constituent_data')
         return self._makePOSTRequest(url_secure, query)
@@ -313,7 +313,7 @@ class PyAPI:
 
         connection.close()
 
-        results = PyAPIResults(url_secure, response, headers, body, self.options)
+        results = BsdApiResults(url_secure, response, headers, body, self.options)
         return results
 
     def _makePOSTRequest(self, url_secure, body):
@@ -334,5 +334,5 @@ class PyAPI:
 
         connection.close()
 
-        results = PyAPIResults(url_secure, response, headers, body, self.options)
+        results = BsdApiResults(url_secure, response, headers, body, self.options)
         return results

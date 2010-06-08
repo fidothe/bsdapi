@@ -1,4 +1,4 @@
-class PyAPIBundles:
+class BsdApiBundles:
 
     def __init__(self, bundles):
         self.bundles = bundles

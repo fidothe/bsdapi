@@ -7,7 +7,7 @@ import sys, code, configparser, readline, atexit, os, rlcompleter
 from xml.dom import minidom
 from URL import URL
 from RequestGenerator import RequestGenerator
-from PyAPI import PyAPI
+from BsdApi import BsdApi
 
 class Console(code.InteractiveConsole):
     def __init__(self, locals=None, filename="<console>",
@@ -48,7 +48,7 @@ class Console(code.InteractiveConsole):
         for key, value in config.items('basic'):
             self.settings['basic'][key] = value
 
-        self.api = PyAPI(self.settings['basic']['api_id'], self.settings['basic']['secret'], self.settings['basic']['host'], self.settings['basic']['port'], self.options)
+        self.api = BsdApi(self.settings['basic']['api_id'], self.settings['basic']['secret'], self.settings['basic']['host'], self.settings['basic']['port'], self.options)
 
         code.InteractiveConsole.__init__(self, self.__dict__)
         self.init_history(histfile)

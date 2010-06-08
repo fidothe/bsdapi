@@ -1,6 +1,6 @@
 from Colors import Colors
 
-class PyAPIResults:
+class BsdApiResults:
 
     def __init__(self, request_url, http_response, headers, body, options=None):
         self.http_status  = http_response.status
