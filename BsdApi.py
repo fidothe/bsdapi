@@ -259,6 +259,11 @@ class BsdApi:
         url_secure = self._generateRequest('/circle/set_circle_owner')
         return self._makePOSTRequest(url_secure, query)
 
+    def signup_processSignup(self, xml_data):
+        query = {}
+        url_secure = self._generateRequest('/signup/process_signup', query)
+        return self._makePOSTRequest(url_secure, xml_data)
+
     def signup_listForms(self):
         query = {}
         url_secure = self._generateRequest('/signup/list_forms', query)
