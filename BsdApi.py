@@ -305,13 +305,12 @@ class BsdApi:
         url_secure = self._generateRequest('/get_deferred_results', query)
         return self._makeGETRequest(url_secure)
 
-    def doRequest(self, api_call, api_params = {}, body = None, request_type = GET):
+    def doRequest(self, api_call, api_params = {}, request_type = GET, body = None):
         url = self._generateRequest(api_call, api_params)
         return self._makeRequest(url, request_type, body)
 
     def _makeRequest(self, url_secure, request_type, http_body = None, headers = None):
         connection = http.client.HTTPConnection(self.host, self.port)
-        connection.set_debuglevel(5)
         if http_body != None and headers != None:
             connection.request(request_type, url_secure.getPathAndQuery(), http_body, headers)
         else:
