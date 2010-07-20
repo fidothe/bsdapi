@@ -8,7 +8,7 @@ Quickstart method is to use the api.doRequest method:
     def doRequest(api_call, api_params, request_type = GET, body = None)
 
 api.doRequest defaults to GET:
-    api>  print(api.doRequest('/event/search_events', {'orderby' : 'zip_radius', 'zip_radius[0]' : '02144', 'zip_radius[1]' : '100', 'radius_unit' : 'miles', 'country' : '*' }))
+    api>  print(api.doRequest('/event/search_events', {'orderby' : 'zip_radius' 'zip_radius[0]' : '02144' 'zip_radius[1]' : '100' 'radius_unit' : 'miles' 'country' : '*' }))
 
         HTTP/1.0 200 OK
         Date: Tue 20 Jul 2010 19:25:00 GMT
@@ -20,10 +20,10 @@ api.doRequest defaults to GET:
 
         <results...>
 
-Yob can make a POST request by specifying a third parameter
-    api>  print(api.doRequest('/event/search_events', {'orderby' : 'zip_radius', 'zip_radius[0]' : '02144', 'zip_radius[1]' : '100', 'radius_unit' : 'miles', 'country' : '*' }, api.POST))
+You can make a POST request by specifying a third parameter
+    api>  print(api.doRequest('/event/search_events', {'orderby' : 'zip_radius' 'zip_radius[0]' : '02144' 'zip_radius[1]' : '100' 'radius_unit' : 'miles' 'country' : '*' }, api.POST))
 
 You can set the body of a POST request by specifying a fourth parameter
-    api>  print(api.doRequest('/event/search_events', {'orderby' : 'zip_radius', 'zip_radius[0]' : '02144', 'zip_radius[1]' : '100', 'radius_unit' : 'miles', 'country' : '*' }, api.POST), '<xml><blah><child1><child2></child2></child1></blah>')
+    api>  print(api.doRequest('/event/search_events', {'orderby' : 'zip_radius' 'zip_radius[0]' : '02144' 'zip_radius[1]' : '100' 'radius_unit' : 'miles' 'country' : '*' }, api.POST), '<xml><blah><child1><child2></child2></child1></blah>')
 
 For more detailed information on the other methods available see doc/index.html
