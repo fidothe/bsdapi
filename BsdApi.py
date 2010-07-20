@@ -7,6 +7,9 @@ import http.client, urllib.parse
 
 class BsdApi:
 
+    GET = 'GET'
+    POST = 'POST'
+
     def __init__(self, api_id, secret, host, port, options=None):
         self.api_id = api_id
         self.secret = secret
@@ -299,6 +302,26 @@ class BsdApi:
         url_secure = self._generateRequest('/get_deferred_results', query)
         return self._makeGETRequest(url_secure)
 
+    def doRequest(self, api_call, api_params = {}, body = None, request_type = GET):
+        url = self._generateRequest(api_call, api_params)
+        return self._makeRequest(url, request_type, body)
+
+    def _makeRequest(self, url_secure, request_type, http_body = None, headers = None):
+        connection = http.client.HTTPConnection(self.host, self.port)
+
+        if http_body != None and headers != None:
+            connection.request(request_type, url_secure.getPathAndQuery(), http_body, headers)
+        else:
+            connection.request(request_type, url_secure.getPathAndQuery());
+        response = connection.getresponse()
+        headers = response.getheaders()
+        body = response.read().decode()
+
+        connection.close()
+
+        results = BsdApiResults(url_secure, response, headers, body, self.options)
+        return results
+
     def _generateRequest(self, api_call, api_params = {}):
         host = self.host
         if self.port != 80:
@@ -309,20 +332,9 @@ class BsdApi:
         return url_secure
 
     def _makeGETRequest(self, url_secure):
-        connection = http.client.HTTPConnection(self.host, self.port)
-        connection.request('GET', url_secure.getPathAndQuery())
-
-        response = connection.getresponse()
-        headers = response.getheaders()
-        body = response.read().decode()
-
-        connection.close()
-
-        results = BsdApiResults(url_secure, response, headers, body, self.options)
-        return results
+        return _makeRequest(url_secure, BsdApi.GET);
 
     def _makePOSTRequest(self, url_secure, body):
-        connection = http.client.HTTPConnection(self.host, self.port)
         headers = {"Content-type": "application/x-www-form-urlencoded",
                    "Accept": "text/xml"}
 
@@ -331,13 +343,4 @@ class BsdApi:
         else:
             http_body = body
 
-        connection.request('POST', url_secure.getPathAndQuery(), http_body, headers)
-
-        response = connection.getresponse()
-        headers = response.getheaders()
-        body = response.read().decode()
-
-        connection.close()
-
-        results = BsdApiResults(url_secure, response, headers, body, self.options)
-        return results
+        return _makeRequest(url_secure, BsdApi.POST, http_body, headers)
