@@ -4,6 +4,9 @@ from BsdApiResults import BsdApiResults
 from collections import OrderedDict
 from RequestGenerator import RequestGenerator
 import http.client, urllib.parse
+from http.client import HTTPException
+import sys
+import traceback
 
 class BsdApi:
 
@@ -308,19 +311,24 @@ class BsdApi:
 
     def _makeRequest(self, url_secure, request_type, http_body = None, headers = None):
         connection = http.client.HTTPConnection(self.host, self.port)
-
+        connection.set_debuglevel(5)
         if http_body != None and headers != None:
             connection.request(request_type, url_secure.getPathAndQuery(), http_body, headers)
         else:
             connection.request(request_type, url_secure.getPathAndQuery());
-        response = connection.getresponse()
-        headers = response.getheaders()
-        body = response.read().decode()
+        response = None
+        try:
+            response = connection.getresponse()
+            headers = response.getheaders()
+            body = response.read().decode()
 
-        connection.close()
+            connection.close()
 
-        results = BsdApiResults(url_secure, response, headers, body, self.options)
-        return results
+            results = BsdApiResults(url_secure, response, headers, body, self.options)
+            return results
+        except HTTPException:
+            print(''.join(traceback.format_exception(*sys.exc_info())))
+            print("Error calling " + url_secure.getPathAndQuery())
 
     def _generateRequest(self, api_call, api_params = {}):
         host = self.host
@@ -332,7 +340,7 @@ class BsdApi:
         return url_secure
 
     def _makeGETRequest(self, url_secure):
-        return _makeRequest(url_secure, BsdApi.GET);
+        return self._makeRequest(url_secure, BsdApi.GET);
 
     def _makePOSTRequest(self, url_secure, body):
         headers = {"Content-type": "application/x-www-form-urlencoded",
@@ -343,4 +351,4 @@ class BsdApi:
         else:
             http_body = body
 
-        return _makeRequest(url_secure, BsdApi.POST, http_body, headers)
+        return self._makeRequest(url_secure, BsdApi.POST, http_body, headers)
