@@ -1,27 +1,29 @@
 First make sure you have a valid config file.  See example.cfg.
 
 example usage:
-./Console.py -f example.cfg
+    ./Console.py -f example.cfg
 
 Quickstart method is to use the api.doRequest method:
 
-def doRequest(api_call, api_params, request_type = GET, body = None)
+    def doRequest(api_call, api_params, request_type = GET, body = None)
 
 api.doRequest defaults to GET:
-api>  print(api.doRequest('/event/search_events', {'orderby' : 'zip_radius' 'zip_radius[0]' : '02144' 'zip_radius[1]' : '100' 'radius_unit' : 'miles' 'country' : '*' }))
+    api>  print(api.doRequest('/event/search_events', {'orderby' : 'zip_radius' 'zip_radius[0]' : '02144' 'zip_radius[1]' : '100' 'radius_unit' : 'miles' 'country' : '*' }))
 
-HTTP/1.0 409 Conflict
-Date: Tue 20 Jul 2010 19:25:00 GMT
-Server: Apache/2.0.63 (Unix) mod_ssl/2.0.63 OpenSSL/0.9.7g PHP/5.2.6
-X-Powered-By: PHP/5.2.6
-Content-Length: 7112
-Connection: close
-Content-Type: application/json; charset=utf-8
+        HTTP/1.0 200 OK
+        Date: Tue 20 Jul 2010 19:25:00 GMT
+        Server: Apache/2.0.63 (Unix) mod_ssl/2.0.63 OpenSSL/0.9.7g PHP/5.2.6
+        X-Powered-By: PHP/5.2.6
+        Content-Length: 7112
+        Connection: close
+        Content-Type: application/xml; charset=utf-8
+
+        <results...>
 
 You can make a POST request by specifying a third parameter
-api>  print(api.doRequest('/event/search_events', {'orderby' : 'zip_radius' 'zip_radius[0]' : '02144' 'zip_radius[1]' : '100' 'radius_unit' : 'miles' 'country' : '*' }, api.POST))
+    api>  print(api.doRequest('/event/search_events', {'orderby' : 'zip_radius' 'zip_radius[0]' : '02144' 'zip_radius[1]' : '100' 'radius_unit' : 'miles' 'country' : '*' }, api.POST))
 
 You can set the body of a POST request by specifying a fourth parameter
-api>  print(api.doRequest('/event/search_events', {'orderby' : 'zip_radius' 'zip_radius[0]' : '02144' 'zip_radius[1]' : '100' 'radius_unit' : 'miles' 'country' : '*' }, api.POST), '<xml><blah><child1><child2></child2></child1></blah>')
+    api>  print(api.doRequest('/event/search_events', {'orderby' : 'zip_radius' 'zip_radius[0]' : '02144' 'zip_radius[1]' : '100' 'radius_unit' : 'miles' 'country' : '*' }, api.POST), '<xml><blah><child1><child2></child2></child1></blah>')
 
 For more detailed information on the other methods available see doc/index.html
