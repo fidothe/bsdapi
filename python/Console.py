@@ -37,7 +37,7 @@ class Console(code.InteractiveConsole):
         (self.options, self.args) = self.parser.parse_args()
 
         if not exists(self.options.config_file):
-            sys.stderr.write("Error: Config file %s does not exist\n" % (self.options.config_file) )
+            sys.stderr.write("Error: Config file %s does not exist, either add it or call as './Console.py -f <path_to_config_file>'\n" % (self.options.config_file))
             sys.exit(1)
 
         config = configparser.RawConfigParser()
