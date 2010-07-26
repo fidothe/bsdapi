@@ -43,12 +43,12 @@ class Console(code.InteractiveConsole):
         config = configparser.RawConfigParser()
         config.read(self.options.config_file)
 
-        self.settings = {'basic' : {'host': 'localhost', 'port': '80'}}
+        self.settings = {'basic' : {'host': 'localhost', 'port': '80', 'secure_port': '443'}}
 
         for key, value in config.items('basic'):
             self.settings['basic'][key] = value
 
-        self.api = BsdApi(self.settings['basic']['api_id'], self.settings['basic']['secret'], self.settings['basic']['host'], self.settings['basic']['port'], self.options)
+        self.api = BsdApi(self.settings['basic']['api_id'], self.settings['basic']['secret'], self.settings['basic']['host'], self.settings['basic']['port'], self.settings['basic']['secure_port'], self.options)
 
         code.InteractiveConsole.__init__(self, self.__dict__)
         self.init_history(histfile)

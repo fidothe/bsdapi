@@ -8,11 +8,12 @@ from collections import OrderedDict
 
 class RequestGenerator:
 
-    def __init__(self, api_id, api_secret, api_host):
+    def __init__(self, api_id, api_secret, api_host, https = False):
         self.api_secret = api_secret
         self.api_id     = api_id
         self.api_host   = api_host
         self.api_base   = '/page/api'
+        self.https      = https
 
     def _query_str(self, api_ts, api_params, quote=False):
 
@@ -45,6 +46,7 @@ class RequestGenerator:
         params['api_mac'] = self._signing_string(unix_ts, api_call, params)
 
         url = URL()
+        url.protocol = 'https' if self.https else 'http'
         url.host = self.api_host
         url.path = self.api_base + api_call
         url.query = self._query_str(unix_ts, params, quote=True)
