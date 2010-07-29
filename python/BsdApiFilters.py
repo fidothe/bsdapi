@@ -9,7 +9,7 @@ class BsdApiFilters:
     def _collapse(self):
         filters = {}
         for key, value in self.filters.items():
-            if key not in ['state_cd', 'primary_state_cd', 'is_subscribed', 'has_account', 'signup_form_id']:
+            if key not in ['state_cd', 'primary_state_cd', 'is_subscribed', 'has_account', 'signup_form_id', 'email']:
                 raise FilterError('Incorrect filter parameter')
             elif key == 'state_cd' and type(value).__name__ == 'list' and len(value) > 1:
                 filters[key] = "(%s)" % (','.join(value))
@@ -24,6 +24,8 @@ class BsdApiFilters:
             elif key == 'primary_state_cd' and type(value).__name__ == 'str':
                 filters[key] = value
             elif key == 'signup_form_id':
+                filters[key] = str(value)
+            elif key == 'email':
                 filters[key] = str(value)
             else:
                 raise FilterError('Incorrect Filter parameters')

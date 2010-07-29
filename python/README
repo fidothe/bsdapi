@@ -1,7 +1,9 @@
+Requires Python 3
+
 First make sure you have a valid config file.  See example.cfg.
 
 example usage:
-    ./Console.py -f example.cfg
+    $ python Console.py -f example.cfg
 
 Quickstart method is to use the api.doRequest method:
 

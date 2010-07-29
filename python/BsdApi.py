@@ -14,11 +14,12 @@ class BsdApi:
     GET = 'GET'
     POST = 'POST'
 
-    def __init__(self, api_id, secret, host, port, options=None):
+    def __init__(self, api_id, secret, host, port, secure_port, options=None):
         self.api_id = api_id
         self.secret = secret
         self.host   = host
         self.port   = port
+        self.secure_port = secure_port
         self.options = options
 
     def cons_getConstituents(self, filter, bundles=None):
@@ -306,12 +307,21 @@ class BsdApi:
         url_secure = self._generateRequest('/get_deferred_results', query)
         return self._makeGETRequest(url_secure)
 
+    def checkCredentials(self, user_id, password):
+        query = {'user_id': user_id, 'password': password}
+        url_secure = self._generateRequest('/check_credentials', query, https = True)
+
+        return self._makeGETRequest(url_secure, https = True)
+
     def doRequest(self, api_call, api_params = {}, request_type = GET, body = None, headers = None, username = None, password = None):
         url = self._generateRequest(api_call, api_params)
         return self._makeRequest(url, request_type, body, headers, username, password)
 
-    def _makeRequest(self, url_secure, request_type, http_body = None, headers = None, username = None, password = None):
-        connection = http.client.HTTPConnection(self.host, self.port)
+    def _makeRequest(self, url_secure, request_type, http_body = None, headers = None, username = None, password = None, https=False):
+        connect_function = http.client.HTTPSConnection if https else http.client.HTTPConnection
+        port = self.secure_port if https else self.port
+
+        connection = connect_function(self.host, port)
         if(self.options.verbose):
             connection.set_debuglevel(5)
         if username != None:
@@ -321,6 +331,7 @@ class BsdApi:
             if headers == None:
                 headers = dict()
             headers["Authorization"] = "Basic " + base64.b64encode(auth_string.encode('utf-8')).decode('utf-8')
+
         if http_body != None and headers != None:
             connection.request(request_type, url_secure.getPathAndQuery(), http_body, headers)
         elif headers != None:
@@ -341,19 +352,24 @@ class BsdApi:
             print(''.join(traceback.format_exception(*sys.exc_info())))
             print("Error calling " + url_secure.getPathAndQuery())
 
-    def _generateRequest(self, api_call, api_params = {}):
+    def _generateRequest(self, api_call, api_params = {}, https = False):
         host = self.host
-        if self.port != 80:
-            host = host + ":" + self.port
 
-        request = RequestGenerator(self.api_id, self.secret, host)
+        if https:
+            if self.secure_port != 443:
+                host = host + ':' + self.secure_port
+        else:
+            if self.port != 80:
+                host = host + ":" + self.port
+
+        request = RequestGenerator(self.api_id, self.secret, host, https)
         url_secure = request.getUrl(api_call, api_params)
         return url_secure
 
-    def _makeGETRequest(self, url_secure):
-        return self._makeRequest(url_secure, BsdApi.GET);
+    def _makeGETRequest(self, url_secure, https = False):
+        return self._makeRequest(url_secure, BsdApi.GET, https = https);
 
-    def _makePOSTRequest(self, url_secure, body):
+    def _makePOSTRequest(self, url_secure, body, https = False):
         headers = {"Content-type": "application/x-www-form-urlencoded",
                    "Accept": "text/xml"}
 
@@ -362,4 +378,4 @@ class BsdApi:
         else:
             http_body = body
 
-        return self._makeRequest(url_secure, BsdApi.POST, http_body, headers)
+        return self._makeRequest(url_secure, BsdApi.POST, http_body, headers, https)
