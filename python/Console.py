@@ -1,8 +1,13 @@
-#!/home/sfrazer/bin/python
+#!/usr/bin/python
+
+import sys
+
+if sys.version_info[0] != 3:
+    print("This application only works for Python version 3+. You are running Python " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + ".")
+    sys.exit(1)
 
 from os.path import exists
 from optparse import OptionParser
-import http.client
 import sys, code, configparser, readline, atexit, os, rlcompleter
 from xml.dom import minidom
 from URL import URL
