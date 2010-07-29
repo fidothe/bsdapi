@@ -7,6 +7,7 @@ import http.client, urllib.parse
 from http.client import HTTPException
 import sys
 import traceback
+import base64
 
 class BsdApi:
 
@@ -305,16 +306,27 @@ class BsdApi:
         url_secure = self._generateRequest('/get_deferred_results', query)
         return self._makeGETRequest(url_secure)
 
-    def doRequest(self, api_call, api_params = {}, request_type = GET, body = None):
+    def doRequest(self, api_call, api_params = {}, request_type = GET, body = None, headers = None, username = None, password = None):
         url = self._generateRequest(api_call, api_params)
-        return self._makeRequest(url, request_type, body)
+        return self._makeRequest(url, request_type, body, headers, username, password)
 
-    def _makeRequest(self, url_secure, request_type, http_body = None, headers = None):
+    def _makeRequest(self, url_secure, request_type, http_body = None, headers = None, username = None, password = None):
         connection = http.client.HTTPConnection(self.host, self.port)
+        if(self.options.verbose):
+            connection.set_debuglevel(5)
+        if username != None:
+            auth_string = username
+            if password != None:
+                auth_string += ":" + password
+            if headers == None:
+                headers = dict()
+            headers["Authorization"] = "Basic " + base64.b64encode(auth_string.encode('utf-8')).decode('utf-8')
         if http_body != None and headers != None:
             connection.request(request_type, url_secure.getPathAndQuery(), http_body, headers)
+        elif headers != None:
+            connection.request(request_type, url_secure.getPathAndQuery(), None, headers)
         else:
-            connection.request(request_type, url_secure.getPathAndQuery());
+            connection.request(request_type, url_secure.getPathAndQuery())
         response = None
         try:
             response = connection.getresponse()
