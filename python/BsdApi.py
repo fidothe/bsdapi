@@ -14,12 +14,14 @@ class BsdApi:
     GET = 'GET'
     POST = 'POST'
 
-    def __init__(self, api_id, secret, host, port, secure_port, options=None):
-        self.api_id = api_id
-        self.secret = secret
-        self.host   = host
-        self.port   = port
-        self.secure_port = secure_port
+    def __init__(self, basic_settings, options=None):
+        self.api_id = basic_settings['api_id'].strip()
+        self.secret = basic_settings['secret'].strip()
+        self.host   = basic_settings['host'].strip()
+        self.port   = basic_settings['port'].strip()
+        self.secure_port = basic_settings['secure_port'].strip()
+        self.username = basic_settings['username'].strip()
+        self.password = basic_settings['password'].strip()
         self.options = options
 
     def cons_getConstituents(self, filter, bundles=None):
@@ -313,21 +315,21 @@ class BsdApi:
 
         return self._makeGETRequest(url_secure, https = True)
 
-    def doRequest(self, api_call, api_params = {}, request_type = GET, body = None, headers = None, username = None, password = None):
+    def doRequest(self, api_call, api_params = {}, request_type = GET, body = None, headers = None):
         url = self._generateRequest(api_call, api_params)
-        return self._makeRequest(url, request_type, body, headers, username, password)
+        return self._makeRequest(url, request_type, body, headers)
 
-    def _makeRequest(self, url_secure, request_type, http_body = None, headers = None, username = None, password = None, https=False):
+    def _makeRequest(self, url_secure, request_type, http_body = None, headers = None, https=False):
         connect_function = http.client.HTTPSConnection if https else http.client.HTTPConnection
         port = self.secure_port if https else self.port
 
         connection = connect_function(self.host, port)
         if(self.options.verbose):
             connection.set_debuglevel(5)
-        if username != None:
-            auth_string = username
-            if password != None:
-                auth_string += ":" + password
+        if self.username:
+            auth_string = self.username
+            if self.password:
+                auth_string += ":" + self.password
             if headers == None:
                 headers = dict()
             headers["Authorization"] = "Basic " + base64.b64encode(auth_string.encode('utf-8')).decode('utf-8')

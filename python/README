@@ -2,6 +2,8 @@ Requires Python 3
 
 First make sure you have a valid config file.  See example.cfg.
 
+**Now supports HTTP Auth Basic! Just add username: and password: to your config file
+
 example usage:
     $ python Console.py -f example.cfg
 
