@@ -309,8 +309,8 @@ class BsdApi:
         url_secure = self._generateRequest('/get_deferred_results', query)
         return self._makeGETRequest(url_secure)
 
-    def checkCredentials(self, user_id, password):
-        query = {'user_id': user_id, 'password': password}
+    def checkCredentials(self, userid, password):
+        query = {'userid': userid, 'password': password}
         url_secure = self._generateRequest('/check_credentials', query, https = True)
 
         return self._makeGETRequest(url_secure, https = True)
