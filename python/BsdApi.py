@@ -304,16 +304,30 @@ class BsdApi:
         url_secure = self._generateRequest('/wrappers/list_wrappers')
         return self._makeGETRequest(url_secure)
 
+    def account_checkCredentials(self, userid, password):
+        query = {'userid': userid, 'password': password}
+        url_secure = self._generateRequest('/account/check_credentials', query, https = True)
+        return self._makeGETRequest(url_secure, https = True)
+
+    def account_createAccount(self, email, password, firstname, lastname, zip):
+        query = {'email':email, 'password':password, 'firstname':firstname, 'lastname':lastname, 'zip':zip}
+        url_secure = self._generateRequest('/account/create_account', query, https = True)
+        return self._makeGETRequest(url_secure, https = True)
+
+    def account_resetPassword(self, userid):
+        query = {'userid': userid}
+        url_secure = self._generateRequest('/account/reset_password', query, https = True)
+        return self._makeGETRequest(url_secure, https = True)
+
+    def account_setPassword(self, userid, password):
+        query = {'userid': userid, 'password': password}
+        url_secure = self._generateRequest('/account/set_password', query, https = True)
+        return self._makeGETRequest(url_secure, https = True)
+
     def getDeferredResults(self, deferred_id):
         query = {'deferred_id': deferred_id}
         url_secure = self._generateRequest('/get_deferred_results', query)
         return self._makeGETRequest(url_secure)
-
-    def checkCredentials(self, userid, password):
-        query = {'userid': userid, 'password': password}
-        url_secure = self._generateRequest('/check_credentials', query, https = True)
-
-        return self._makeGETRequest(url_secure, https = True)
 
     def doRequest(self, api_call, api_params = {}, request_type = GET, body = None, headers = None, https = False):
         url = self._generateRequest(api_call, api_params, https)

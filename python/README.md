@@ -202,5 +202,9 @@ The following methods are available for use. All methods return a `BsdApiResults
 * **VAN API Calls**
 * **VAN Campaign API Calls**
 * **Account API Calls**
+    * `account_checkCredentials(userid, password)`
+    * `account_createAccount(email, password, firstname, lastname, zip)`
+    * `account_resetPassword(userid)`
+    * `account_setPassword(userid, password)`
 * **Deferred Results API Calls**
     * `getDeferredResults(deferred_id)`
