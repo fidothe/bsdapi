@@ -278,7 +278,7 @@ class BsdApi:
         query = {}
         url_secure = self._generateRequest('/signup/list_forms', query)
         return self._makeGETRequest(url_secure)
-    
+
     def signup_listFormFields(self, signup_form_id):
         query = {'signup_form_id': str(signup_form_id)}
         url_secure = self._generateRequest('/signup/list_form_fields', query)
@@ -315,9 +315,9 @@ class BsdApi:
 
         return self._makeGETRequest(url_secure, https = True)
 
-    def doRequest(self, api_call, api_params = {}, request_type = GET, body = None, headers = None):
-        url = self._generateRequest(api_call, api_params)
-        return self._makeRequest(url, request_type, body, headers)
+    def doRequest(self, api_call, api_params = {}, request_type = GET, body = None, headers = None, https = False):
+        url = self._generateRequest(api_call, api_params, https)
+        return self._makeRequest(url, request_type, body, headers, https)
 
     def _makeRequest(self, url_secure, request_type, http_body = None, headers = None, https=False):
         connect_function = http.client.HTTPSConnection if https else http.client.HTTPConnection

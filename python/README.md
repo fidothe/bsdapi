@@ -77,8 +77,8 @@ Issue the following command and you should get results similar to what is shown.
         </signup_form>
     </api>
 
-Raw API Methods
----------------
+Raw API Method
+--------------
 To issue a raw API request use the `api.doRequest` method, which will always return a `BsdApiResults` object. This method accepts 4 parameters as listed below:
 
 * **api_call**
@@ -104,6 +104,16 @@ To issue a raw API request use the `api.doRequest` method, which will always ret
   *Optional* -- defaults to `None`
 
   You can set the body of a POST request by specifying the fourth parameter.
+
+* **headers**
+
+  *Optional* -- defaults to `None`
+
+* **https**
+
+  *Optional* -- defaults to `False`
+
+  Set this to `True` to send the API call securely using SSL.
 
 API Call Using Helper Methods Example
 -------------------------------------
