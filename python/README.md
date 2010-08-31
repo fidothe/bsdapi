@@ -197,6 +197,9 @@ The following methods are available for use. All methods return a `BsdApiResults
     * `signup_signupCount(signup_form_id, signup_form_field_ids=None)`
     * `signup_countByField(signup_form_id, signup_form_field_id)`
     * `signup_form_id, signup_form_field_id`
+* **Outreach (outreach) API Calls**
+    * `outreach_getPageById(outreach_page_id)`
+    * `outreach_setPageData(xml_data)`
 * **Wrappers (wrappers) API Calls**
     * `wrappers_listWrappers()`
 * **VAN API Calls**

@@ -269,6 +269,15 @@ class BsdApi:
         url_secure = self._generateRequest('/circle/set_circle_owner')
         return self._makePOSTRequest(url_secure, query)
 
+    def outreach_getPageById(self, id):
+        query = {'id': str(id)}
+        url_secure = self._generateRequest('/outreach/get_page_by_id')
+        return self._makePOSTRequest(url_secure, query)
+
+    def outreach_setPageData(self, xml_data):
+        url_secure = self._generateRequest('/outreach/set_page_data', {})
+        return self._makePOSTRequest(url_secure, xml_data)
+
     def signup_processSignup(self, xml_data):
         query = {}
         url_secure = self._generateRequest('/signup/process_signup', query)
