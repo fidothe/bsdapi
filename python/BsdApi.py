@@ -347,14 +347,18 @@ class BsdApi:
         port = self.secure_port if https else self.port
 
         connection = connect_function(self.host, port)
+
+        if headers == None:
+            headers = dict()
+
+        headers['User-Agent'] = 'Python API'
+
         if(self.options.verbose):
             connection.set_debuglevel(5)
         if self.username:
             auth_string = self.username
             if self.password:
                 auth_string += ":" + self.password
-            if headers == None:
-                headers = dict()
             headers["Authorization"] = "Basic " + base64.b64encode(auth_string.encode('utf-8')).decode('utf-8')
 
         if http_body != None and headers != None:
@@ -403,4 +407,4 @@ class BsdApi:
         else:
             http_body = body
 
-        return self._makeRequest(url_secure, BsdApi.POST, http_body, headers, https)
+        return self._makeRequest(url_secure, BsdApi.POST, http_body, headers, None, None, https)
