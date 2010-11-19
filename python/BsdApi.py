@@ -18,10 +18,27 @@ class BsdApi:
         self.api_id = basic_settings['api_id'].strip()
         self.secret = basic_settings['secret'].strip()
         self.host   = basic_settings['host'].strip()
-        self.port   = basic_settings['port'].strip()
-        self.secure_port = basic_settings['secure_port'].strip()
-        self.username = basic_settings['username'].strip()
-        self.password = basic_settings['password'].strip()
+
+        if 'port' in basic_settings.keys():
+            self.port = basic_settings['port'].strip()
+        else:
+            self.port = 80
+
+        if 'secure_port' in basic_settings.keys():
+            self.secure_port = basic_settings['secure_port'].strip()
+        else:
+            self.secure_port = 443
+
+        if 'username' in basic_settings.keys():
+            self.username = basic_settings['username'].strip()
+        else:
+            self.username = None
+
+        if 'password' in basic_settings.keys():
+            self.password = basic_settings['password'].strip()
+        else:
+            self.password = None
+
         self.options = options
 
     def cons_getConstituents(self, filter, bundles=None):
