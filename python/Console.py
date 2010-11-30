@@ -2,8 +2,8 @@
 
 import sys
 
-if sys.version_info[0] != 3:
-    print("This application only works for Python version 3+. You are running Python " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + ".")
+if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] < 1):
+    print("This application only works for Python version 3.1+. You are running Python " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + ".")
     sys.exit(1)
 
 from os.path import exists
