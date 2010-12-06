@@ -357,7 +357,11 @@ class BsdApi:
 
     def doRequest(self, api_call, api_params = {}, request_type = GET, body = None, headers = None, https = False):
         url = self._generateRequest(api_call, api_params, https)
-        return self._makeRequest(url, request_type, body, headers, https)
+
+        if request_type == "GET":
+            return self._makeGETRequest(url, https)
+        else:
+            return self._makePOSTRequest(url, body, https)
 
     def _makeRequest(self, url_secure, request_type, http_body = None, headers = None, https=False):
         connect_function = http.client.HTTPSConnection if https else http.client.HTTPConnection
