@@ -428,4 +428,4 @@ class BsdApi:
         else:
             http_body = body
 
-        return self._makeRequest(url_secure, BsdApi.POST, http_body, headers, None, None, https)
+        return self._makeRequest(url_secure, BsdApi.POST, http_body, headers, https)
