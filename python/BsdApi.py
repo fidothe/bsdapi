@@ -115,6 +115,11 @@ class BsdApi:
         url_secure = self._generateRequest('/cons/set_constituent_data')
         return self._makePOSTRequest(url_secure, xml_data)
 
+    def cons_getCustomConstituentFields(self):
+        query = {}
+        url_secure = self._generateRequest('/cons/get_custom_constituent_fields', query)
+        return self._makeGETRequest(url_secure)
+
     def cons_group_listConstituentGroups(self):
         url_secure = self._generateRequest('/cons_group/list_constituent_groups')
         return self._makeGETRequest(url_secure)
