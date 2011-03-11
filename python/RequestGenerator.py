@@ -1,4 +1,5 @@
-#!/home/sfrazer/bin/python
+#!/usr/env/bin python
+
 import hmac, hashlib, unittest
 from time import time
 from URL import URL
