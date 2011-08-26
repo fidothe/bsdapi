@@ -90,7 +90,6 @@ class BsdApi:
     def cons_setExtIds(self, ext_type, cons_id__ext_id):
         query = {'ext_type': str(ext_type)}
         query.update(cons_id__ext_id)
-        print(query)
         url_secure = self._generateRequest('/cons/set_ext_ids')
         return self._makePOSTRequest(url_secure, query)
 
@@ -108,7 +107,7 @@ class BsdApi:
         if filter:
             query['filter'] =  str(BsdApiFilters(filter))
 
-        url_secure = self._generateRequest('/cons/get_bulk_constituent_data')
+        url_secure = self._generateRequest('/cons/get_bulk_constituent_data', {})
         return self._makePOSTRequest(url_secure, query)
 
     def cons_setConstituentData(self, xml_data):
@@ -307,8 +306,8 @@ class BsdApi:
 
     def signup_listForms(self):
         query = {}
-        url_secure = self._generateRequest('/signup/list_forms', query)
-        return self._makeGETRequest(url_secure)
+        url_secure = self._generateRequest('/signup/list_forms', query, True)
+        return self._makeGETRequest(url_secure, True)
 
     def signup_listFormFields(self, signup_form_id):
         query = {'signup_form_id': str(signup_form_id)}
@@ -355,6 +354,14 @@ class BsdApi:
         url_secure = self._generateRequest('/account/set_password', query, https = True)
         return self._makeGETRequest(url_secure, https = True)
 
+    def cons_mergeConstituentsById(self, ids):
+        url_secure = self._generateRequest('/cons/merge_constituents_by_id')
+        return self._makePOSTRequest(url_secure, ','.join([str(x) for x in ids]))
+
+    def cons_mergeConstituentsByEmail(self, email):
+        url_secure = self._generateRequest('/cons/merge_constituents_by_email', {'email': email})
+        return self._makeGETRequest(url_secure)
+
     def getDeferredResults(self, deferred_id):
         query = {'deferred_id': deferred_id}
         url_secure = self._generateRequest('/get_deferred_results', query)
@@ -397,7 +404,7 @@ class BsdApi:
         try:
             response = connection.getresponse()
             headers = response.getheaders()
-            body = response.read().decode()
+            body = response.read().decode('iso-8859-1')
 
             connection.close()
 
