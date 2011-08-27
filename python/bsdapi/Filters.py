@@ -1,4 +1,4 @@
-class BsdApiFilters:
+class Filters:
 
     def __init__(self, filters):
         self.filters = filters

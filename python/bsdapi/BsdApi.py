@@ -1,51 +1,34 @@
-from BsdApiBundles import BsdApiBundles
-from BsdApiFilters import BsdApiFilters
-from BsdApiResults import BsdApiResults
-from collections import OrderedDict
-from RequestGenerator import RequestGenerator
-import http.client, urllib.parse
-from http.client import HTTPException
-import sys
-import traceback
-import base64
+from bsdapi.Bundles import Bundles
+from bsdapi.Filters import Filters
+from bsdapi.RequestGenerator import RequestGenerator
+
+try:
+    import http.client as httplib
+    from http.client import HTTPException
+except ImportError:
+    import httplib
+    from httplib import HTTPException
+
+try:
+    from urllib.parse import urlencode
+except ImportError:
+    from urllib import urlencode
+
+import sys, traceback, base64, logging
 
 class BsdApi:
 
     GET = 'GET'
     POST = 'POST'
 
-    def __init__(self, basic_settings, options=None):
-        self.api_id = basic_settings['api_id'].strip()
-        self.secret = basic_settings['secret'].strip()
-        self.host   = basic_settings['host'].strip()
-
-        if 'port' in basic_settings.keys():
-            self.port = basic_settings['port'].strip()
-        else:
-            self.port = 80
-
-        if 'secure_port' in basic_settings.keys():
-            self.secure_port = basic_settings['secure_port'].strip()
-        else:
-            self.secure_port = 443
-
-        if 'username' in basic_settings.keys():
-            self.username = basic_settings['username'].strip()
-        else:
-            self.username = None
-
-        if 'password' in basic_settings.keys():
-            self.password = basic_settings['password'].strip()
-        else:
-            self.password = None
-
-        self.options = options
+    def __init__(self, apiId, apiSecret, apiHost, apiResultFactory, apiPort = 80, apiSecurePort = 443, httpUsername = None, httpPassword = None):
+        self.__dict__.update(locals())
 
     def cons_getConstituents(self, filter, bundles=None):
-        query = {'filter': str(BsdApiFilters(filter))}
+        query = {'filter': str(Filters(filter))}
 
         if bundles:
-            query['bundles'] = str(BsdApiBundles(bundles))
+            query['bundles'] = str(Bundles(bundles))
 
         url_secure = self._generateRequest('/cons/get_constituents', query)
         return self._makeGETRequest(url_secure)
@@ -55,10 +38,10 @@ class BsdApi:
         query = {'cons_ids': ','.join([str(elem) for elem in cons_ids])}
 
         if filter:
-            query['filter'] =  str(BsdApiFilters(filter))
+            query['filter'] =  str(Filters(filter))
 
         if bundles:
-            query['bundles'] = str(BsdApiBundles(bundles))
+            query['bundles'] = str(Bundles(bundles))
 
         url_secure = self._generateRequest('/cons/get_constituents_by_id', query)
         return self._makeGETRequest(url_secure)
@@ -67,10 +50,10 @@ class BsdApi:
         query = {'ext_type': ext_type, 'ext_ids': ','.join([str(elem) for elem in ext_ids])}
 
         if filter:
-            query['filter'] =  str(BsdApiFilters(filter))
+            query['filter'] =  str(Filters(filter))
 
         if bundles:
-            query['bundles'] = str(BsdApiBundles(bundles))
+            query['bundles'] = str(Bundles(bundles))
 
         url_secure = self._generateRequest('/cons/get_constituents_by_ext_id', query)
         return self._makeGETRequest(url_secure)
@@ -79,10 +62,10 @@ class BsdApi:
         query = {'changed_since': str(changed_since)}
 
         if filter:
-            query['filter'] =  str(BsdApiFilters(filter))
+            query['filter'] =  str(Filters(filter))
 
         if bundles:
-            query['bundles'] = str(BsdApiBundles(bundles))
+            query['bundles'] = str(Bundles(bundles))
 
         url_secure = self._generateRequest('/cons/get_updated_constituents', query)
         return self._makeGETRequest(url_secure)
@@ -105,7 +88,7 @@ class BsdApi:
             query['cons_ids'] = ','.join([str(cons) for cons in cons_ids])
 
         if filter:
-            query['filter'] =  str(BsdApiFilters(filter))
+            query['filter'] =  str(Filters(filter))
 
         url_secure = self._generateRequest('/cons/get_bulk_constituent_data', {})
         return self._makePOSTRequest(url_secure, query)
@@ -376,22 +359,20 @@ class BsdApi:
             return self._makePOSTRequest(url, body, https)
 
     def _makeRequest(self, url_secure, request_type, http_body = None, headers = None, https=False):
-        connect_function = http.client.HTTPSConnection if https else http.client.HTTPConnection
-        port = self.secure_port if https else self.port
+        connect_function = httplib.HTTPSConnection if https else httplib.HTTPConnection
+        port = self.apiSecurePort if https else self.apiPort
 
-        connection = connect_function(self.host, port)
+        connection = connect_function(self.apiHost, port)
 
         if headers == None:
             headers = dict()
 
         headers['User-Agent'] = 'Python API'
 
-        if(self.options.verbose):
-            connection.set_debuglevel(5)
-        if self.username:
-            auth_string = self.username
-            if self.password:
-                auth_string += ":" + self.password
+        if self.httpUsername:
+            auth_string = self.httpUsername
+            if self.httpPassword:
+                auth_string += ":" + self.httpPassword
             headers["Authorization"] = "Basic " + base64.b64encode(auth_string.encode('utf-8')).decode('utf-8')
 
         if http_body != None and headers != None:
@@ -408,23 +389,23 @@ class BsdApi:
 
             connection.close()
 
-            results = BsdApiResults(url_secure, response, headers, body, self.options)
+            results = self.apiResultFactory.create(url_secure, response, headers, body)
             return results
         except HTTPException:
             print(''.join(traceback.format_exception(*sys.exc_info())))
             print("Error calling " + url_secure.getPathAndQuery())
 
     def _generateRequest(self, api_call, api_params = {}, https = False):
-        host = self.host
+        apiHost = self.apiHost
 
         if https:
-            if self.secure_port != 443:
-                host = host + ':' + self.secure_port
+            if self.apiSecurePort != 443:
+                apiHost = apiHost + ':' + self.apiSecurePort
         else:
-            if self.port != 80:
-                host = host + ":" + self.port
+            if self.apiPort != 80:
+                apiHost = apiHost + ":" + self.apiPort
 
-        request = RequestGenerator(self.api_id, self.secret, host, https)
+        request = RequestGenerator(self.apiId, self.apiSecret, apiHost, https)
         url_secure = request.getUrl(api_call, api_params)
         return url_secure
 
@@ -436,7 +417,7 @@ class BsdApi:
                    "Accept": "text/xml"}
 
         if type(body).__name__ == 'dict':
-            http_body = urllib.parse.urlencode(body)
+            http_body = urlencode(body)
         else:
             http_body = body
 
