@@ -3,15 +3,16 @@ Blue State Digital Interactive API
 
 Requirements
 ------------
-* The BSD API is written in [Python 3](http://www.python.org/download/releases/3.0/) and requires Python 3+ to be installed on the host.
+
+* Python 2.7+
 
 Installing
 ----------
-The easiest way to get up and running is to download the source, and from the directory with the source code, run:
 
-    /path/to/python3 Console.py --file=api.cfg
+    $ cd /path/to/setup.py
+    $ python setup.py install
 
-The file api.cfg can be created from the sample.cfg file in the same directory. See the next section about how to write the configuration file.
+The executable's path might not be in your PATH.  In the output for the installer, there is a line that says where the executable is located.  It should say something like 'Installing bsdapi script to /home/sfrazer/bin'.
 
 Configuration File
 ------------------
@@ -27,19 +28,28 @@ The configuration file describes how to connect to your API host and the credent
 
 The `api_id` and `secret` are taken directly from the Manage API Users page.
 
+The username and password fields are only if HTTP basic authentication is required to access the API.  For most cases, these variables can be left out.
+
 Usage
 -----
 To display usage options use the `--help` flag
 
-    Usage: Console.py [options]
+    $ bsdapi --help
+    usage: bsdapi [-h] [-L LOG_LEVEL] [-c] [-v] CONFIG
 
-    Options:
-      --version             show program's version number and exit
+    Blue State Digital API Client
+
+    positional arguments:
+      CONFIG                Configuration file
+
+    optional arguments:
       -h, --help            show this help message and exit
-      -v, --verbose         Makes this tool loud and obnoxious.
-      -c, --color           Use ANSI colors for display
-      -f CONFIG_FILE, --file=CONFIG_FILE
-                            The Configuration File
+      -L LOG_LEVEL, --log-level LOG_LEVEL
+                            'debug', 'error', 'warning', 'info', or 'critical'
+      -c, --color           Display with ANSI terminal colors.
+      -v, --verbose         Show verbose output.
+
+    (c) 2011 Blue State Digital
 
 Raw API Call Example
 --------------------
@@ -47,8 +57,8 @@ The following walks through making a simple API call to list out all signup form
 
 First start the shell.
 
-    /path/to/python3 Console.py --file=api.cfg
-    BSD Interactive API
+    $ bsdapi /path/to/config.cfg
+    Blue State Digital API Client
     api>
 
 Issue the following command and you should get results similar to what is shown.
@@ -79,7 +89,7 @@ Issue the following command and you should get results similar to what is shown.
 
 Raw API Method
 --------------
-To issue a raw API request use the `api.doRequest` method, which will always return a `BsdApiResults` object. This method accepts 4 parameters as listed below:
+To issue a raw API request use the `api.doRequest` method, which will always return a `ApiResult` object. This method accepts 4 parameters as listed below:
 
 * **api_call**
 
@@ -121,8 +131,8 @@ The following walks through making a simple API call to list out all signup form
 
 First start the shell.
 
-    /path/to/python3 Console.py --file=api.cfg
-    BSD Interactive API
+    $ bsdapi /path/to/config.cfg
+    Blue State Digital API Client
     api>
 
 Issue the following command and you should get results similar to what is shown.
