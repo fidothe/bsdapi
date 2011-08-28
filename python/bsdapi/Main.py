@@ -70,7 +70,7 @@ def Cli():
     logger.debug( 'CLI: %s' % (cli) )
 
     if not os.path.exists(cli.config[0]):
-        logger.error("Error: Config file %s does not exist, either add it or call as './Console.py -f <path_to_config_file>'\n" % (cli.config))
+        logger.error("Error: configuration file %s does not exist." % (cli.config[0]))
         sys.exit(1)
 
     config = configparser.RawConfigParser()

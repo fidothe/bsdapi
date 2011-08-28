@@ -1,7 +1,7 @@
 import os
 from setuptools import setup, find_packages
 
-version = '1'
+version = '2'
 README = os.path.join(os.path.dirname(__file__), 'README')
 long_description = 'Command line client for making API calls.'
 

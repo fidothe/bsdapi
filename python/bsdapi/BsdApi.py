@@ -391,8 +391,8 @@ class BsdApi:
 
             results = self.apiResultFactory.create(url_secure, response, headers, body)
             return results
-        except HTTPException:
-            print(''.join(traceback.format_exception(*sys.exc_info())))
+        except HTTPException as error:
+            print(error)
             print("Error calling " + url_secure.getPathAndQuery())
 
     def _generateRequest(self, api_call, api_params = {}, https = False):
