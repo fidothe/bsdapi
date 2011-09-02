@@ -92,37 +92,37 @@ Python Library Usage
 
 The bsdapi can be included as a module and used to build larger applications.  A quick and dirty example from the Python REPL:
 
-    $ python2.7
-    Python 2.7.1 (r271:86832, Feb  1 2011, 13:36:23) 
-    [GCC 3.4.6 20060404 (Red Hat 3.4.6-11)] on linux2
-    Type "help", "copyright", "credits" or "license" for more information.
-    >>> from bsdapi.BsdApi import Factory as BsdApiFactory
-    >>> apiFactory = BsdApiFactory()
-    >>> api = apiFactory.create('sfrazer', '8c0c28888dbb57865bc8f606aa7de7240cca4bd6', 'sandgate.bluestatedigital.com', port=8174, securePort=9174)
-    >>> api
-    <bsdapi.BsdApi.BsdApi instance at 0x2a99fae440>
-    >>> results = api.signup_listForms()
-    >>> print(results)
-    HTTP/1.1 200 OK
-    date: Fri, 02 Sep 2011 15:29:11 GMT
-    content-length: 294
-    x-powered-by: PHP/5.2.6
-    content-type: application/xml; charset=utf-8
-    server: Apache/2.0.63 (Unix) mod_ssl/2.0.63 OpenSSL/0.9.7g PHP/5.2.6
+        $ python2.7
+        Python 2.7.1 (r271:86832, Feb  1 2011, 13:36:23) 
+        [GCC 3.4.6 20060404 (Red Hat 3.4.6-11)] on linux2
+        Type "help", "copyright", "credits" or "license" for more information.
+        >>> from bsdapi.BsdApi import Factory as BsdApiFactory
+        >>> apiFactory = BsdApiFactory()
+        >>> api = apiFactory.create('sfrazer', '8c0c298a8dbb5d865bc8c606aa7de7240cca4bd6', 'sandgate.bluestatedigital.com', port=8174, securePort=9174)
+        >>> api
+        <bsdapi.BsdApi.BsdApi instance at 0x2a99fae440>
+        >>> results = api.signup_listForms()
+        >>> print(results)
+        HTTP/1.1 200 OK
+        date: Fri, 02 Sep 2011 15:29:11 GMT
+        content-length: 294
+        x-powered-by: PHP/5.2.6
+        content-type: application/xml; charset=utf-8
+        server: Apache/2.0.63 (Unix) mod_ssl/2.0.63 OpenSSL/0.9.7g PHP/5.2.6
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <api>
-        <signup_form id="1" modified_dt="1305148183">
-            <signup_form_name>Default Signup Form</signup_form_name>
-            <signup_form_slug/>
-            <form_public_title/>
-            <create_dt>2011-05-10 13:57:10</create_dt>
-        </signup_form>
-    </api>
-    >>> results.body
-    u'<?xml version="1.0" encoding="UTF-8"?>\n<api>\n    <signup_form id="1" modified_dt="1305148183">\n        <signup_form_name>Default Signup Form</signup_form_name>\n        <signup_form_slug/>\n        <form_public_title/>\n        <create_dt>2011-05-10 13:57:10</create_dt>\n    </signup_form>\n</api>\n'
-    >>> results.headers
-    [('date', 'Fri, 02 Sep 2011 15:29:11 GMT'), ('content-length', '294'), ('x-powered-by', 'PHP/5.2.6'), ('content-type', 'application/xml; charset=utf-8'), ('server', 'Apache/2.0.63 (Unix) mod_ssl/2.0.63 OpenSSL/0.9.7g PHP/5.2.6')]
+        <?xml version="1.0" encoding="UTF-8"?>
+        <api>
+            <signup_form id="1" modified_dt="1305148183">
+                <signup_form_name>Default Signup Form</signup_form_name>
+                <signup_form_slug/>
+                <form_public_title/>
+                <create_dt>2011-05-10 13:57:10</create_dt>
+            </signup_form>
+        </api>
+        >>> results.body
+        u'<?xml version="1.0" encoding="UTF-8"?>\n<api>\n    <signup_form id="1" modified_dt="1305148183">\n        <signup_form_name>Default Signup Form</signup_form_name>\n        <signup_form_slug/>\n        <form_public_title/>\n        <create_dt>2011-05-10 13:57:10</create_dt>\n    </signup_form>\n</api>\n'
+        >>> results.headers
+        [('date', 'Fri, 02 Sep 2011 15:29:11 GMT'), ('content-length', '294'), ('x-powered-by', 'PHP/5.2.6'), ('content-type', 'application/xml; charset=utf-8'), ('server', 'Apache/2.0.63 (Unix) mod_ssl/2.0.63 OpenSSL/0.9.7g PHP/5.2.6')]
 
 Raw API Method
 --------------
