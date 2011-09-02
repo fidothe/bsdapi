@@ -1,6 +1,9 @@
 from bsdapi.Bundles import Bundles
 from bsdapi.Filters import Filters
 from bsdapi.RequestGenerator import RequestGenerator
+from bsdapi.Styler import Factory as StylerFactory
+from bsdapi.ApiResult import FactoryFactory as ApiResultFactoryFactory
+from bsdapi.ApiResult import ApiResultPrettyPrintable
 
 try:
     import http.client as httplib
@@ -400,10 +403,10 @@ class BsdApi:
 
         if https:
             if self.apiSecurePort != 443:
-                apiHost = apiHost + ':' + self.apiSecurePort
+                apiHost = apiHost + ':' + str(self.apiSecurePort)
         else:
             if self.apiPort != 80:
-                apiHost = apiHost + ":" + self.apiPort
+                apiHost = apiHost + ":" + str(self.apiPort)
 
         request = RequestGenerator(self.apiId, self.apiSecret, apiHost, https)
         url_secure = request.getUrl(api_call, api_params)
@@ -422,3 +425,9 @@ class BsdApi:
             http_body = body
 
         return self._makeRequest(url_secure, BsdApi.POST, http_body, headers, https)
+
+class Factory:
+    def create(self, id, secret, host, port, securePort, colorize = False):
+        styler = StylerFactory().create( colorize )
+        apiResultFactory = ApiResultFactoryFactory().create(ApiResultPrettyPrintable(styler))
+        return BsdApi(id,secret,host,apiResultFactory,port,securePort)

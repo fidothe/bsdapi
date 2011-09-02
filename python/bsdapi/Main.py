@@ -10,7 +10,7 @@ from bsdapi.URL import URL
 from bsdapi.RequestGenerator import RequestGenerator
 from bsdapi.ApiResult import ApiResultPrettyPrintable
 from bsdapi.ApiResult import FactoryFactory as ApiResultFactoryFactory
-from bsdapi.BsdApi import BsdApi
+from bsdapi.BsdApi import Factory as BsdApiFactory
 from bsdapi.Logger import Factory as LoggerFactory
 from bsdapi.Styler import Factory as StylerFactory
 
@@ -89,16 +89,14 @@ def Cli():
 
     logger.debug( 'Settings: %s' % (settings) )
 
-    styler = StylerFactory().create( cli.color )
-    apiResultFactory = ApiResultFactoryFactory().create(ApiResultPrettyPrintable(styler))
-
-    api = BsdApi(
-        apiId = settings['basic']['api_id'], \
-        apiSecret = settings['basic']['secret'], \
-        apiHost = settings['basic']['host'], \
-        apiResultFactory = apiResultFactory, \
-        apiPort = settings['basic']['port'], \
-        apiSecurePort = settings['basic']['secure_port']
+    apiFactory = BsdApiFactory()
+    api = apiFactory.create(
+        id = settings['basic']['api_id'], \
+        secret = settings['basic']['secret'], \
+        host = settings['basic']['host'], \
+        port = settings['basic']['port'], \
+        securePort = settings['basic']['secure_port'],
+        colorize = cli.color
     )
 
     console = Console({
