@@ -1,5 +1,5 @@
-Blue State Digital Interactive API
-==================================
+Blue State Digital API Client
+=============================
 
 Requirements
 ------------
