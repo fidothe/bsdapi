@@ -156,19 +156,19 @@ class BsdApi:
         url_secure = self._generateRequest('/cons_group/add_ext_ids_to_group')
         return self._makePOSTRequest(url_secure, query)
 
-    def cons_group_removeConsIdsToGroup(self, cons_group_id, cons_ids):
+    def cons_group_removeConsIdsFromGroup(self, cons_group_id, cons_ids):
         query = {'cons_group_ids': str(cons_group_id),
                  'cons_ids': ','.join([str(cons) for cons in cons_ids])}
 
-        url_secure = self._generateRequest('/cons_group/remove_cons_ids_to_group')
+        url_secure = self._generateRequest('/cons_group/remove_cons_ids_from_group')
         return self._makePOSTRequest(url_secure, query)
 
-    def cons_group_removeExtIdsToGroup(self, cons_group_id, ext_type, ext_ids):
+    def cons_group_removeExtIdsFromGroup(self, cons_group_id, ext_type, ext_ids):
         query = {'cons_group_ids': str(cons_group_id),
                  'ext_type': ext_type,
                  'ext_ids': ','.join([str(ext) for ext in ext_ids])}
 
-        url_secure = self._generateRequest('/cons_group/remove_ext_ids_to_group')
+        url_secure = self._generateRequest('/cons_group/remove_ext_ids_from_group')
         return self._makePOSTRequest(url_secure, query)
 
     def circle_listCircles(self, circle_type=None, state_cd=None):
@@ -346,6 +346,10 @@ class BsdApi:
 
     def cons_mergeConstituentsByEmail(self, email):
         url_secure = self._generateRequest('/cons/merge_constituents_by_email', {'email': email})
+        return self._makeGETRequest(url_secure)
+
+    def reference_processPersonalizationTag(self, who):
+        url_secure = self._generateRequest('/reference/process_personalization_tag', {'who': who})
         return self._makeGETRequest(url_secure)
 
     def getDeferredResults(self, deferred_id):
