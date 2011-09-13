@@ -115,16 +115,16 @@ class BsdApi:
         return self._makeGETRequest(url_secure)
 
     def cons_group_addConstituentGroup(self, xml_data):
-        url_secure = self._generateRequest('/cons/add_constituent_group')
+        url_secure = self._generateRequest('/cons_group/add_constituent_groups')
         return self._makePOSTRequest(url_secure, xml_data)
 
-    def cons_group_deleteConstituentGroup(self, cons_group_ids):
+    def cons_group_deleteConstituentGroups(self, cons_group_ids):
         query = {'cons_group_ids': ','.join([str(c) for c in cons_group_ids])}
-        url_secure = self._generateRequest('/cons_group/delete_constituent_group', query)
+        url_secure = self._generateRequest('/cons_group/delete_constituent_groups', query)
         return self._makeGETRequest(url_secure)
 
     def cons_group_getConsIdsForGroup(self, cons_group_id):
-        query = {'cons_group_ids': str(cons_group_id)}
+        query = {'cons_group_id': str(cons_group_id)}
         url_secure = self._generateRequest('/cons_group/get_cons_ids_for_group', query)
         return self._makeGETRequest(url_secure)
 
@@ -134,7 +134,7 @@ class BsdApi:
         return self._makeGETRequest(url_secure)
 
     def cons_group_setExtIdsForGroup(self, cons_group_id, ext_type, ext_ids):
-        query = {'cons_group_ids': str(cons_group_id),
+        query = {'cons_group_id': str(cons_group_id),
                  'ext_type': ext_type,
                  'ext_ids': ','.join([str(ext) for ext in ext_ids])}
 
@@ -142,14 +142,14 @@ class BsdApi:
         return self._makePOSTRequest(url_secure, query)
 
     def cons_group_addConsIdsToGroup(self, cons_group_id, cons_ids):
-        query = {'cons_group_ids': str(cons_group_id),
+        query = {'cons_group_id': str(cons_group_id),
                  'cons_ids': ','.join([str(cons) for cons in cons_ids])}
 
         url_secure = self._generateRequest('/cons_group/add_cons_ids_to_group')
         return self._makePOSTRequest(url_secure, query)
 
     def cons_group_addExtIdsToGroup(self, cons_group_id, ext_type, ext_ids):
-        query = {'cons_group_ids': str(cons_group_id),
+        query = {'cons_group_id': str(cons_group_id),
                  'ext_type': ext_type,
                  'ext_ids': ','.join([str(ext) for ext in ext_ids])}
 
@@ -157,14 +157,14 @@ class BsdApi:
         return self._makePOSTRequest(url_secure, query)
 
     def cons_group_removeConsIdsFromGroup(self, cons_group_id, cons_ids):
-        query = {'cons_group_ids': str(cons_group_id),
+        query = {'cons_group_id': str(cons_group_id),
                  'cons_ids': ','.join([str(cons) for cons in cons_ids])}
 
         url_secure = self._generateRequest('/cons_group/remove_cons_ids_from_group')
         return self._makePOSTRequest(url_secure, query)
 
     def cons_group_removeExtIdsFromGroup(self, cons_group_id, ext_type, ext_ids):
-        query = {'cons_group_ids': str(cons_group_id),
+        query = {'cons_group_id': str(cons_group_id),
                  'ext_type': ext_type,
                  'ext_ids': ','.join([str(ext) for ext in ext_ids])}
 
