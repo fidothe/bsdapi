@@ -27,150 +27,48 @@ class BsdApi:
     def __init__(self, apiId, apiSecret, apiHost, apiResultFactory, apiPort = 80, apiSecurePort = 443, httpUsername = None, httpPassword = None):
         self.__dict__.update(locals())
 
-    def cons_getConstituents(self, filter, bundles=None):
-        query = {'filter': str(Filters(filter))}
-
-        if bundles:
-            query['bundles'] = str(Bundles(bundles))
-
-        url_secure = self._generateRequest('/cons/get_constituents', query)
+    """
+        ***** General *****
+    """
+    def getDeferredResults(self, deferred_id):
+        query = {'deferred_id': deferred_id}
+        url_secure = self._generateRequest('/get_deferred_results', query)
         return self._makeGETRequest(url_secure)
 
-    def cons_getConstituentsById(self, cons_ids, filter=None, bundles=None):
-        '''Retrieves constituents by ID '''
-        query = {'cons_ids': ','.join([str(elem) for elem in cons_ids])}
+    def doRequest(self, api_call, api_params = {}, request_type = GET, body = None, headers = None, https = False):
+        url = self._generateRequest(api_call, api_params, https)
 
-        if filter:
-            query['filter'] =  str(Filters(filter))
+        if request_type == "GET":
+            return self._makeGETRequest(url, https)
+        else:
+            return self._makePOSTRequest(url, body, https)
 
-        if bundles:
-            query['bundles'] = str(Bundles(bundles))
+    """
+        ***** Account *****
+    """
+    def account_checkCredentials(self, userid, password):
+        query = {'userid': userid, 'password': password}
+        url_secure = self._generateRequest('/account/check_credentials', query, https = True)
+        return self._makeGETRequest(url_secure, https = True)
 
-        url_secure = self._generateRequest('/cons/get_constituents_by_id', query)
-        return self._makeGETRequest(url_secure)
+    def account_createAccount(self, email, password, firstname, lastname, zip):
+        query = {'email':email, 'password':password, 'firstname':firstname, 'lastname':lastname, 'zip':zip}
+        url_secure = self._generateRequest('/account/create_account', query, https = True)
+        return self._makeGETRequest(url_secure, https = True)
 
-    def cons_getConstituentsByExtId(self, ext_type, ext_ids, filter=None, bundles=None):
-        query = {'ext_type': ext_type, 'ext_ids': ','.join([str(elem) for elem in ext_ids])}
+    def account_resetPassword(self, userid):
+        query = {'userid': userid}
+        url_secure = self._generateRequest('/account/reset_password', query, https = True)
+        return self._makeGETRequest(url_secure, https = True)
 
-        if filter:
-            query['filter'] =  str(Filters(filter))
+    def account_setPassword(self, userid, password):
+        query = {'userid': userid, 'password': password}
+        url_secure = self._generateRequest('/account/set_password', query, https = True)
+        return self._makeGETRequest(url_secure, https = True)
 
-        if bundles:
-            query['bundles'] = str(Bundles(bundles))
-
-        url_secure = self._generateRequest('/cons/get_constituents_by_ext_id', query)
-        return self._makeGETRequest(url_secure)
-
-    def cons_getUpdatedConstituents(self, changed_since, filter=None, bundles=None):
-        query = {'changed_since': str(changed_since)}
-
-        if filter:
-            query['filter'] =  str(Filters(filter))
-
-        if bundles:
-            query['bundles'] = str(Bundles(bundles))
-
-        url_secure = self._generateRequest('/cons/get_updated_constituents', query)
-        return self._makeGETRequest(url_secure)
-
-    def cons_setExtIds(self, ext_type, cons_id__ext_id):
-        query = {'ext_type': str(ext_type)}
-        query.update(cons_id__ext_id)
-        url_secure = self._generateRequest('/cons/set_ext_ids')
-        return self._makePOSTRequest(url_secure, query)
-
-    def cons_deleteConstituentsById(self, cons_ids):
-        query = {'cons_ids': ','.join([str(cons) for cons in cons_ids])}
-        url_secure = self._generateRequest('/cons/delete_constituents_by_id')
-        return self._makePOSTRequest(url_secure, query)
-
-    def cons_getBulkConstituentData(self, format, fields, cons_ids=None, filter=None):
-        query = {'format': str(format), 'fields': ','.join([str(field) for field in fields])}
-
-        if cons_ids:
-            query['cons_ids'] = ','.join([str(cons) for cons in cons_ids])
-
-        if filter:
-            query['filter'] =  str(Filters(filter))
-
-        url_secure = self._generateRequest('/cons/get_bulk_constituent_data', {})
-        return self._makePOSTRequest(url_secure, query)
-
-    def cons_setConstituentData(self, xml_data):
-        url_secure = self._generateRequest('/cons/set_constituent_data')
-        return self._makePOSTRequest(url_secure, xml_data)
-
-    def cons_getCustomConstituentFields(self):
-        query = {}
-        url_secure = self._generateRequest('/cons/get_custom_constituent_fields', query)
-        return self._makeGETRequest(url_secure)
-
-    def cons_group_listConstituentGroups(self):
-        url_secure = self._generateRequest('/cons_group/list_constituent_groups')
-        return self._makeGETRequest(url_secure)
-
-    def cons_group_getConstituentGroup(self, cons_group_id):
-        query = {'cons_group_id': str(cons_group_id)}
-        url_secure = self._generateRequest('/cons_group/get_constituent_group', query)
-        return self._makeGETRequest(url_secure)
-
-    def cons_group_addConstituentGroup(self, xml_data):
-        url_secure = self._generateRequest('/cons_group/add_constituent_groups')
-        return self._makePOSTRequest(url_secure, xml_data)
-
-    def cons_group_deleteConstituentGroups(self, cons_group_ids):
-        query = {'cons_group_ids': ','.join([str(c) for c in cons_group_ids])}
-        url_secure = self._generateRequest('/cons_group/delete_constituent_groups', query)
-        return self._makeGETRequest(url_secure)
-
-    def cons_group_getConsIdsForGroup(self, cons_group_id):
-        query = {'cons_group_id': str(cons_group_id)}
-        url_secure = self._generateRequest('/cons_group/get_cons_ids_for_group', query)
-        return self._makeGETRequest(url_secure)
-
-    def cons_group_getExtIdsForGroup(self, cons_group_id, ext_type):
-        query = {'cons_group_ids': str(cons_group_id), 'ext_type': ext_type}
-        url_secure = self._generateRequest('/cons_group/get_ext_ids_for_group', query)
-        return self._makeGETRequest(url_secure)
-
-    def cons_group_setExtIdsForGroup(self, cons_group_id, ext_type, ext_ids):
-        query = {'cons_group_id': str(cons_group_id),
-                 'ext_type': ext_type,
-                 'ext_ids': ','.join([str(ext) for ext in ext_ids])}
-
-        url_secure = self._generateRequest('/cons_group/set_ext_ids_for_group')
-        return self._makePOSTRequest(url_secure, query)
-
-    def cons_group_addConsIdsToGroup(self, cons_group_id, cons_ids):
-        query = {'cons_group_id': str(cons_group_id),
-                 'cons_ids': ','.join([str(cons) for cons in cons_ids])}
-
-        url_secure = self._generateRequest('/cons_group/add_cons_ids_to_group')
-        return self._makePOSTRequest(url_secure, query)
-
-    def cons_group_addExtIdsToGroup(self, cons_group_id, ext_type, ext_ids):
-        query = {'cons_group_id': str(cons_group_id),
-                 'ext_type': ext_type,
-                 'ext_ids': ','.join([str(ext) for ext in ext_ids])}
-
-        url_secure = self._generateRequest('/cons_group/add_ext_ids_to_group')
-        return self._makePOSTRequest(url_secure, query)
-
-    def cons_group_removeConsIdsFromGroup(self, cons_group_id, cons_ids):
-        query = {'cons_group_id': str(cons_group_id),
-                 'cons_ids': ','.join([str(cons) for cons in cons_ids])}
-
-        url_secure = self._generateRequest('/cons_group/remove_cons_ids_from_group')
-        return self._makePOSTRequest(url_secure, query)
-
-    def cons_group_removeExtIdsFromGroup(self, cons_group_id, ext_type, ext_ids):
-        query = {'cons_group_id': str(cons_group_id),
-                 'ext_type': ext_type,
-                 'ext_ids': ','.join([str(ext) for ext in ext_ids])}
-
-        url_secure = self._generateRequest('/cons_group/remove_ext_ids_from_group')
-        return self._makePOSTRequest(url_secure, query)
-
+    """
+        ***** Circle *****
+    """
     def circle_listCircles(self, circle_type=None, state_cd=None):
         query = {}
 
@@ -276,6 +174,175 @@ class BsdApi:
         url_secure = self._generateRequest('/circle/set_circle_owner')
         return self._makePOSTRequest(url_secure, query)
 
+    """
+        ***** Cons *****
+    """
+    def cons_getConstituents(self, filter, bundles=None):
+        query = {'filter': str(Filters(filter))}
+
+        if bundles:
+            query['bundles'] = str(Bundles(bundles))
+
+        url_secure = self._generateRequest('/cons/get_constituents', query)
+        return self._makeGETRequest(url_secure)
+
+    def cons_getConstituentsById(self, cons_ids, filter=None, bundles=None):
+        '''Retrieves constituents by ID '''
+        query = {'cons_ids': ','.join([str(elem) for elem in cons_ids])}
+
+        if filter:
+            query['filter'] =  str(Filters(filter))
+
+        if bundles:
+            query['bundles'] = str(Bundles(bundles))
+
+        url_secure = self._generateRequest('/cons/get_constituents_by_id', query)
+        return self._makeGETRequest(url_secure)
+
+    def cons_getConstituentsByExtId(self, ext_type, ext_ids, filter=None, bundles=None):
+        query = {'ext_type': ext_type, 'ext_ids': ','.join([str(elem) for elem in ext_ids])}
+
+        if filter:
+            query['filter'] =  str(Filters(filter))
+
+        if bundles:
+            query['bundles'] = str(Bundles(bundles))
+
+        url_secure = self._generateRequest('/cons/get_constituents_by_ext_id', query)
+        return self._makeGETRequest(url_secure)
+
+    def cons_getUpdatedConstituents(self, changed_since, filter=None, bundles=None):
+        query = {'changed_since': str(changed_since)}
+
+        if filter:
+            query['filter'] =  str(Filters(filter))
+
+        if bundles:
+            query['bundles'] = str(Bundles(bundles))
+
+        url_secure = self._generateRequest('/cons/get_updated_constituents', query)
+        return self._makeGETRequest(url_secure)
+
+    def cons_setExtIds(self, ext_type, cons_id__ext_id):
+        query = {'ext_type': str(ext_type)}
+        query.update(cons_id__ext_id)
+        url_secure = self._generateRequest('/cons/set_ext_ids')
+        return self._makePOSTRequest(url_secure, query)
+
+    def cons_deleteConstituentsById(self, cons_ids):
+        query = {'cons_ids': ','.join([str(cons) for cons in cons_ids])}
+        url_secure = self._generateRequest('/cons/delete_constituents_by_id')
+        return self._makePOSTRequest(url_secure, query)
+
+    def cons_getBulkConstituentData(self, format, fields, cons_ids=None, filter=None):
+        query = {'format': str(format), 'fields': ','.join([str(field) for field in fields])}
+
+        if cons_ids:
+            query['cons_ids'] = ','.join([str(cons) for cons in cons_ids])
+
+        if filter:
+            query['filter'] =  str(Filters(filter))
+
+        url_secure = self._generateRequest('/cons/get_bulk_constituent_data', {})
+        return self._makePOSTRequest(url_secure, query)
+
+    def cons_setConstituentData(self, xml_data):
+        url_secure = self._generateRequest('/cons/set_constituent_data')
+        return self._makePOSTRequest(url_secure, xml_data)
+
+    def cons_getCustomConstituentFields(self):
+        query = {}
+        url_secure = self._generateRequest('/cons/get_custom_constituent_fields', query)
+        return self._makeGETRequest(url_secure)
+
+    def cons_mergeConstituentsById(self, ids):
+        url_secure = self._generateRequest('/cons/merge_constituents_by_id')
+        return self._makePOSTRequest(url_secure, ','.join([str(x) for x in ids]))
+
+    def cons_mergeConstituentsByEmail(self, email):
+        url_secure = self._generateRequest('/cons/merge_constituents_by_email', {'email': email})
+        return self._makeGETRequest(url_secure)
+
+    """
+        ***** Cons_Group *****
+    """
+    def cons_group_listConstituentGroups(self):
+        url_secure = self._generateRequest('/cons_group/list_constituent_groups')
+        return self._makeGETRequest(url_secure)
+
+    def cons_group_getConstituentGroup(self, cons_group_id):
+        query = {'cons_group_id': str(cons_group_id)}
+        url_secure = self._generateRequest('/cons_group/get_constituent_group', query)
+        return self._makeGETRequest(url_secure)
+
+    def cons_group_addConstituentGroup(self, xml_data):
+        url_secure = self._generateRequest('/cons_group/add_constituent_groups')
+        return self._makePOSTRequest(url_secure, xml_data)
+
+    def cons_group_deleteConstituentGroups(self, cons_group_ids):
+        query = {'cons_group_ids': ','.join([str(c) for c in cons_group_ids])}
+        url_secure = self._generateRequest('/cons_group/delete_constituent_groups', query)
+        return self._makeGETRequest(url_secure)
+
+    def cons_group_getConsIdsForGroup(self, cons_group_id):
+        query = {'cons_group_id': str(cons_group_id)}
+        url_secure = self._generateRequest('/cons_group/get_cons_ids_for_group', query)
+        return self._makeGETRequest(url_secure)
+
+    def cons_group_getExtIdsForGroup(self, cons_group_id, ext_type):
+        query = {'cons_group_ids': str(cons_group_id), 'ext_type': ext_type}
+        url_secure = self._generateRequest('/cons_group/get_ext_ids_for_group', query)
+        return self._makeGETRequest(url_secure)
+
+    def cons_group_setExtIdsForGroup(self, cons_group_id, ext_type, ext_ids):
+        query = {'cons_group_id': str(cons_group_id),
+                 'ext_type': ext_type,
+                 'ext_ids': ','.join([str(ext) for ext in ext_ids])}
+
+        url_secure = self._generateRequest('/cons_group/set_ext_ids_for_group')
+        return self._makePOSTRequest(url_secure, query)
+
+    def cons_group_addConsIdsToGroup(self, cons_group_id, cons_ids):
+        query = {'cons_group_id': str(cons_group_id),
+                 'cons_ids': ','.join([str(cons) for cons in cons_ids])}
+
+        url_secure = self._generateRequest('/cons_group/add_cons_ids_to_group')
+        return self._makePOSTRequest(url_secure, query)
+
+    def cons_group_addExtIdsToGroup(self, cons_group_id, ext_type, ext_ids):
+        query = {'cons_group_id': str(cons_group_id),
+                 'ext_type': ext_type,
+                 'ext_ids': ','.join([str(ext) for ext in ext_ids])}
+
+        url_secure = self._generateRequest('/cons_group/add_ext_ids_to_group')
+        return self._makePOSTRequest(url_secure, query)
+
+    def cons_group_removeConsIdsFromGroup(self, cons_group_id, cons_ids):
+        query = {'cons_group_id': str(cons_group_id),
+                 'cons_ids': ','.join([str(cons) for cons in cons_ids])}
+
+        url_secure = self._generateRequest('/cons_group/remove_cons_ids_from_group')
+        return self._makePOSTRequest(url_secure, query)
+
+    def cons_group_removeExtIdsFromGroup(self, cons_group_id, ext_type, ext_ids):
+        query = {'cons_group_id': str(cons_group_id),
+                 'ext_type': ext_type,
+                 'ext_ids': ','.join([str(ext) for ext in ext_ids])}
+
+        url_secure = self._generateRequest('/cons_group/remove_ext_ids_from_group')
+        return self._makePOSTRequest(url_secure, query)
+
+    """
+        ***** Event_RSVP *****
+    """
+    def event_rsvp_list(self, event_id):
+        query = {'event_id': str(event_id)}
+        url_secure = self._generateRequest('/event/list_rsvps')
+        return self._makePOSTRequest(url_secure, query)
+
+    """
+        ***** Outreach *****
+    """
     def outreach_getPageById(self, id):
         query = {'id': str(id)}
         url_secure = self._generateRequest('/outreach/get_page_by_id')
@@ -285,6 +352,16 @@ class BsdApi:
         url_secure = self._generateRequest('/outreach/set_page_data', {})
         return self._makePOSTRequest(url_secure, xml_data)
 
+    """
+        ***** Reference *****
+    """
+    def reference_processPersonalizationTag(self, who):
+        url_secure = self._generateRequest('/reference/process_personalization_tag', {'who': who})
+        return self._makeGETRequest(url_secure)
+
+    """
+        ***** Signup *****
+    """
     def signup_processSignup(self, xml_data):
         query = {}
         url_secure = self._generateRequest('/signup/process_signup', query)
@@ -316,55 +393,16 @@ class BsdApi:
         url_secure = self._generateRequest('/signup/count_by_field', query)
         return self._makeGETRequest(url_secure)
 
+    """
+        ***** Wrappers *****
+    """
     def wrappers_listWrappers(self):
         url_secure = self._generateRequest('/wrappers/list_wrappers')
         return self._makeGETRequest(url_secure)
 
-    def account_checkCredentials(self, userid, password):
-        query = {'userid': userid, 'password': password}
-        url_secure = self._generateRequest('/account/check_credentials', query, https = True)
-        return self._makeGETRequest(url_secure, https = True)
-
-    def account_createAccount(self, email, password, firstname, lastname, zip):
-        query = {'email':email, 'password':password, 'firstname':firstname, 'lastname':lastname, 'zip':zip}
-        url_secure = self._generateRequest('/account/create_account', query, https = True)
-        return self._makeGETRequest(url_secure, https = True)
-
-    def account_resetPassword(self, userid):
-        query = {'userid': userid}
-        url_secure = self._generateRequest('/account/reset_password', query, https = True)
-        return self._makeGETRequest(url_secure, https = True)
-
-    def account_setPassword(self, userid, password):
-        query = {'userid': userid, 'password': password}
-        url_secure = self._generateRequest('/account/set_password', query, https = True)
-        return self._makeGETRequest(url_secure, https = True)
-
-    def cons_mergeConstituentsById(self, ids):
-        url_secure = self._generateRequest('/cons/merge_constituents_by_id')
-        return self._makePOSTRequest(url_secure, ','.join([str(x) for x in ids]))
-
-    def cons_mergeConstituentsByEmail(self, email):
-        url_secure = self._generateRequest('/cons/merge_constituents_by_email', {'email': email})
-        return self._makeGETRequest(url_secure)
-
-    def reference_processPersonalizationTag(self, who):
-        url_secure = self._generateRequest('/reference/process_personalization_tag', {'who': who})
-        return self._makeGETRequest(url_secure)
-
-    def getDeferredResults(self, deferred_id):
-        query = {'deferred_id': deferred_id}
-        url_secure = self._generateRequest('/get_deferred_results', query)
-        return self._makeGETRequest(url_secure)
-
-    def doRequest(self, api_call, api_params = {}, request_type = GET, body = None, headers = None, https = False):
-        url = self._generateRequest(api_call, api_params, https)
-
-        if request_type == "GET":
-            return self._makeGETRequest(url, https)
-        else:
-            return self._makePOSTRequest(url, body, https)
-
+    """
+        ***** Internal/Helpers *****
+    """
     def _makeRequest(self, url_secure, request_type, http_body = None, headers = None, https=False):
         connect_function = httplib.HTTPSConnection if https else httplib.HTTPConnection
         port = self.apiSecurePort if https else self.apiPort

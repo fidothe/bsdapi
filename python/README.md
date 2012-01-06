@@ -247,3 +247,5 @@ The following methods are available for use. All methods return a `BsdApiResults
     * `account_setPassword(userid, password)`
 * **Deferred Results API Calls**
     * `getDeferredResults(deferred_id)`
+* **Event RSVP API Calls**
+    * `event_rsvp_list(event_id)`
