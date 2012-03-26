@@ -1,0 +1,40 @@
+{
+    "api_version": 1,
+    "status": "success",
+    "redirect_url": "https:...",
+    //this object contains the same json data contained in the action_code/td url params.
+    "reporting_data": {
+        "action_code": "BgpYQRENBEERWl9bbhVSBgYUAR8E",
+        "td": {
+            "firstname": "Example",
+            "lastname": "Donor",
+            "email": "donor@example.com",
+            "phone": "6175559000",
+            "addr1": "123 Main St.",
+            "addr2": "Unit #1",
+            "city": "Schenectady",
+            "state": "NY",
+            "zip": "12345",
+            "country": "US",
+            "transaction_amt": 12.34,
+            "is_recurring": "0",
+            "contribution_key": "HYrsBu_M-89u8TbI1c",
+            "source": null,
+            "subsource": null,
+            "contribution_page_id": "1",
+            "modulename": "contribution",
+            "formname": "Default Fundraising Page",
+            "pagetype": "1",
+            "pageamounts": [
+                10,
+                25,
+                50,
+                100,
+                250,
+                1000,
+                4
+            ],
+            "used_quick_donate": false
+        }
+    }
+}
